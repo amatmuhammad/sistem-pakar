@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Gejala;
+// use App\Models\Gejala;
+// use App\Models\PenyakitHama;
 use App\Models\KasusCbr;
-use App\Models\PenyakitHama;
 use App\Models\FiturKasusCbr;
 use Illuminate\Database\Seeder;
 use App\Models\HasilDiagnosisCbr;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class KasusCbrSeeder extends Seeder
 {
@@ -17,38 +17,38 @@ class KasusCbrSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-         $gejalaIds = Gejala::pluck('id')->toArray();
-        $penyakitIds = PenyakitHama::pluck('id')->toArray();
+        // Kita buat Basis Kasus yang logic
+        $basisKasus = [
+            ['penyakit_id' => 1, 'gejala' => [1, 15, 6]], // Bulai
+            ['penyakit_id' => 2, 'gejala' => [3, 2, 7]],  // Karat
+            ['penyakit_id' => 6, 'gejala' => [4, 5, 11]], // Ulat Grayak
+            ['penyakit_id' => 7, 'gejala' => [9, 12, 10]], // Penggerek Batang
+            ['penyakit_id' => 8, 'gejala' => [13, 14, 19]], // Penggerek Tongkol
+        ];
 
-        for ($i = 1; $i <= 50; $i++) {
+        foreach ($basisKasus as $data) {
+            // Buat 10 variasi kasus untuk setiap penyakit agar database CBR kuat
+            for ($i = 0; $i < 10; $i++) {
+                $kasus = KasusCbr::create([
+                    'user_id' => 1,
+                    'tanggal' => now(),
+                    'nilai_similarity' => 1.0
+                ]);
 
-            $kasus = KasusCbr::create([
-                'user_id' => 1,
-                'tanggal' => now(),
-                'nilai_similarity' => rand(50,100)/100
-            ]);
+                foreach ($data['gejala'] as $idGejala) {
+                    FiturKasusCbr::create([
+                        'kasus_cbr_id' => $kasus->id,
+                        'gejala_id' => $idGejala,
+                        'nilai' => 1
+                    ]);
+                }
 
-            // ambil jumlah gejala acak (3 - 8)
-            $jumlahGejala = rand(3,8);
-
-            $gejalaRandom = collect($gejalaIds)
-                ->shuffle()
-                ->take($jumlahGejala);
-
-            foreach ($gejalaRandom as $idGejala) {
-                FiturKasusCbr::create([
+                HasilDiagnosisCbr::create([
                     'kasus_cbr_id' => $kasus->id,
-                    'gejala_id' => $idGejala,
-                    'nilai' => 1
+                    'penyakit_id' => $data['penyakit_id'],
+                    'similarity_final' => 1.0
                 ]);
             }
-
-            HasilDiagnosisCbr::create([
-                'kasus_cbr_id' => $kasus->id,
-                'penyakit_id' => $penyakitIds[array_rand($penyakitIds)],
-                'similarity_final' => rand(50,100)/100
-            ]);
         }
     }
 }

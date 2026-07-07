@@ -8,23 +8,62 @@
               </a>
             </div>
 
-            <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
-              <!-- Search -->
-              <div class="navbar-nav align-items-center me-auto">
-                <div class="nav-item d-flex align-items-center">
-                  <span class="w-px-22 h-px-22"><i class="icon-base bx bx-search icon-md"></i></span>
-                  <input
-                    type="text"
-                    class="form-control border-0 shadow-none ps-1 ps-sm-2 d-md-block d-none"
-                    placeholder="Search..."
-                    aria-label="Search..." />
-                </div>
-              </div>
-              <!-- /Search -->
+            <div class="navbar-nav-right d-flex align-items-center justify-content-between" id="navbar-collapse">
+              <ul class="navbar-nav flex-row align-items-center me-auto gap-2">
+                <li class="nav-item dropdown">
+                  <a
+                    class="btn btn-primary btn-sm dropdown-toggle d-flex align-items-center"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bx bx-bolt-circle me-1"></i>
+                    <span class="d-none d-sm-inline">Menu Cepat</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ route('diagnosa-cbr.form') }}">
+                        <i class="bx bx-brain me-2 text-primary"></i>
+                        <span>Diagnosa CBR</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ route('diagnosa-cf.form') }}">
+                        <i class="bx bx-list-check me-2 text-info"></i>
+                        <span>Diagnosa CF</span>
+                      </a>
+                    </li>
+                    <li><div class="dropdown-divider"></div></li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ route('diagnosa-cbr.kasus') }}">
+                        <i class="bx bx-folder-open me-2 text-warning"></i>
+                        <span>Basis Kasus CBR</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ route('diagnosa-cbr.hasil') }}">
+                        <i class="bx bx-check-circle me-2 text-success"></i>
+                        <span>Hasil CBR</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ route('diagnosa-cf.hasil') }}">
+                        <i class="bx bx-badge-check me-2 text-success"></i>
+                        <span>Hasil CF</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ route('statistik') }}">
+                        <i class="bx bx-bar-chart-alt-2 me-2 text-secondary"></i>
+                        <span>Statistik</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
 
               <ul class="navbar-nav flex-row align-items-center ms-md-auto">
                 <!-- Place this tag where you want the button to render. -->
-                <li class="nav-item lh-1 me-4">
+                {{-- <li class="nav-item lh-1 me-4">
                   <a
                     class="github-button"
                     href="https://github.com/themeselection/sneat-bootstrap-html-admin-template-free"
@@ -34,7 +73,7 @@
                     aria-label="Star themeselection/sneat-html-admin-template-free on GitHub"
                     >Star</a
                   >
-                </li>
+                </li> --}}
 
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">

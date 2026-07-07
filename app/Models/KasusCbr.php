@@ -29,4 +29,5 @@ class KasusCbr extends Model
     {
         return $this->hasOne(HasilDiagnosisCbr::class, 'kasus_cbr_id');
     }
+
 }

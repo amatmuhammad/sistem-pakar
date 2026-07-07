@@ -16,9 +16,9 @@
         <div class="card-header bg-white py-3">
             <h5 class="mb-0">Daftar Rules CF</h5>
         </div>
-        <div class="table-responsive text-nowrap">
+        <div class="table-responsive text-nowrap p-4">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead class="table-success">
                     <tr>
                         <th class="ps-4">PENYAKIT</th>
                         <th>GEJALA</th>
@@ -32,7 +32,7 @@
                     @forelse($data as $a)
                     <tr>
                         <td class="ps-4">
-                            <span class="fw-bold text-primary">{{ $a->penyakit->nama_penyakit }}</span>
+                            <span class="fw-bold text-warning">{{ $a->penyakit->nama_penyakit }}</span>
                         </td>
                         <td>
                             <div class="d-flex flex-column">
@@ -63,6 +63,16 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="card-footer bg-white border-top py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari {{ $data->total() }} data
+                    </small>
+                    <div>
+                        {{ $data->links('pagination::bootstrap-5') }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

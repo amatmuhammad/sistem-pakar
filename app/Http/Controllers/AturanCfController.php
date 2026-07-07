@@ -11,7 +11,7 @@ class AturanCfController extends Controller
 {
     public function index()
     {
-        $data = AturanCf::with(['gejala','penyakit'])->get();
+        $data = AturanCf::with(['gejala','penyakit'])->paginate(10);
 
         $gejala = Gejala::all(); 
         $penyakit = PenyakitHama::all();

@@ -16,9 +16,9 @@
         <div class="card-header bg-white py-3">
             <h5 class="mb-0">Daftar Penyakit</h5>
         </div>
-        <div class="table-responsive text-nowrap p-2">
+        <div class="table-responsive text-nowrap p-4">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead class="table-success fw-bold">
                     <tr>
                         <th class="ps-4">NAMA PENYAKIT</th>
                         <th>JENIS</th>
@@ -30,10 +30,14 @@
                     @forelse($data as $p)
                     <tr>
                         <td class="ps-4">
-                            <span class="fw-bold text-dark">{{ $p->nama_penyakit }}</span>
+                            <span class="fw-bold text-success">{{ $p->nama_penyakit }}</span>
                         </td>
                         <td>
-                            <span class="badge bg-label-info text-capitalize">{{ $p->jenis }}</span>
+                            @if ($p->jenis == 'hama')
+                                <span class="badge bg-label-danger text-capitalize">Hama</span>
+                            @else
+                                <span class="badge bg-label-warning text-capitalize">Penyakit</span>
+                            @endif
                         </td>
                         <td class="text-wrap" style="max-width: 300px;">
                             <small class="text-muted">{{ Str::limit($p->solusi, 80) }}</small>

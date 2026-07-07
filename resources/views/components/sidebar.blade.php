@@ -1,7 +1,7 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
         <div class="app-brand demo">
         <a href="index.html" class="app-brand-link">
-            <span class="app-brand-logo demo">
+            {{-- <span class="app-brand-logo demo">
             <span class="text-primary">
                 <svg
                 width="25"
@@ -51,8 +51,8 @@
                 </g>
                 </svg>
             </span>
-            </span>
-            <span class="app-brand-text demo menu-text fw-bold ms-2">Sneat</span>
+            </span> --}}
+            <span class="app-brand-text demo menu-text fw-bold ms-2">Sistem Pakar</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -66,8 +66,8 @@
 
         <ul class="menu-inner py-1">
         <!-- Dashboards -->
-        <li class="menu-item">
-            <a href="#" class="menu-link">
+        <li class="menu-item {{ request()->is('dashboard') ? 'active open' : '' }}">
+            <a href="{{ route('dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-smile"></i>
                 <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
             {{-- <span class="badge rounded-pill bg-danger ms-auto">5</span> --}}
@@ -121,30 +121,6 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Data Utama</span>
         </li>
-        {{-- <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-            <i class="menu-icon tf-icons bx bx-layout"></i>
-            <div class="text-truncate" data-i18n="data utama">Data Utama</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-without-menu.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="gejala">Gejala</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="layouts-without-navbar.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="hama dan penyakit">Hama dan Penyakit</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="layouts-fluid.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="aturan certainly factor">Rules Certainly Factor</div>
-                    </a>
-                </li>
-            </ul>
-        </li> --}}
         <li class="menu-item {{ request()->is('gejala*') || request()->is('penyakit*') || request()->is('aturan-cf*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-layout"></i>
@@ -183,44 +159,45 @@
             <span class="menu-header-text">CBR & CF</span>
         </li>
         {{-- cbr --}}
-        <li class="menu-item {{ request()->is('diagnosa-cbr*') }}">
+        <li class="menu-item {{ request()->is('diagnosa-cbr*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-            <i class="menu-icon tf-icons bx bx-list-ul"></i>
-            <div class="text-truncate" data-i18n="Metodecbr">Metode CBR</div>
+                <i class="menu-icon tf-icons bx bx-brain"></i> <div class="text-truncate" data-i18n="Metodecbr">Metode CBR</div>
             </a>
             <ul class="menu-sub">
-            <li class="menu-item {{ request()->is('diagnosa-cbr.index') }}">
-                <a href="{{ route('diagnosa-cbr.form') }}" class="menu-link" target="_blank">
-                <div class="text-truncate" data-i18n="Basic">Diagnosa</div>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="auth-register-basic.html" class="menu-link" target="_blank">
-                <div class="text-truncate" data-i18n="Basic">Hasil Diagnosa</div>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
-                <div class="text-truncate" data-i18n="Basic">Riwayat</div>
-                </a>
-            </li>
+                <li class="menu-item {{ request()->routeIs('diagnosa-cbr.form') ? 'active' : '' }}">
+                    <a href="{{ route('diagnosa-cbr.form') }}" class="menu-link">
+                        <div class="text-truncate" data-i18n="Diagnosa">Diagnosa</div>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ request()->routeIs('diagnosa-cbr.kasus') ? 'active' : '' }}">
+                    <a href="{{ route('diagnosa-cbr.kasus') }}" class="menu-link">
+                        <div class="text-truncate" data-i18n="Kasus">Basis Kasus</div>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ request()->routeIs('diagnosa-cbr.hasil') ? 'active' : ''}}">
+                    <a href="{{ route('diagnosa-cbr.hasil') }}" class="menu-link"> <div class="text-truncate" data-i18n="Hasil">Hasil Diagnosa</div>
+                    </a>
+                </li>
+
             </ul>
         </li>
 
         {{-- cf --}}
-        <li class="menu-item">
+        <li class="menu-item {{ request()->is('diagnosa-cf*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-list-ul"></i>
             <div class="text-truncate" data-i18n="Authentications">Metode CF</div>
             </a>
             <ul class="menu-sub">
-            <li class="menu-item">
-                <a href="auth-login-basic.html" class="menu-link" target="_blank">
+            <li class="menu-item {{ request()->routeIs('diagnosa-cf.form') ? 'active' : '' }}">
+                <a href="{{ route('diagnosa-cf.form') }}" class="menu-link" >
                 <div class="text-truncate" data-i18n="Basic">Diagnosa</div>
                 </a>
             </li>
-            <li class="menu-item">
-                <a href="auth-register-basic.html" class="menu-link" target="_blank">
+            <li class="menu-item {{ request()->routeIs('diagnosa-cf.hasil') ? 'active' : '' }}">
+                <a href="{{ route('diagnosa-cf.hasil') }}" class="menu-link">
                 <div class="text-truncate" data-i18n="Basic">Hasil Diagnosa</div>
                 </a>
             </li>
@@ -235,14 +212,14 @@
         <!-- Components -->
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Perbandingan</span></li>
         <!-- Cards -->
-        <li class="menu-item">
-            <a href="cards-basic.html" class="menu-link">
+        <li class="menu-item {{ request()->is('perbandingan-akurasi*') ? 'active open' : '' }}">
+            <a href="{{ route('perbandingan.akurasi') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-check-double"></i>
             <div class="text-truncate" data-i18n="Basic">Akurasi</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="cards-basic.html" class="menu-link">
+        <li class="menu-item {{ request()->is('statistik*') ? 'active open' : '' }}">
+            <a href="{{ route('statistik') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-analyse"></i>
             <div class="text-truncate" data-i18n="Basic">Statistik</div>
             </a>

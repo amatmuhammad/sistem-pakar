@@ -3,13 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GejalaController;
 use App\Http\Controllers\AturanCfController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiagnosaCfController;
 use App\Http\Controllers\DiagnosaCbrController;
 use App\Http\Controllers\PenyakitHamaController;
+use App\Http\Controllers\PerbandinganController;
 
 Route::get('/', function () {
-    return view('layouts.app');
+    return redirect()->route('dashboard');
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 /* ===================== MASTER DATA GEJALA ===================== */
     Route::get('/gejala', [GejalaController::class, 'index'])->name('gejala.index');
@@ -32,7 +36,15 @@ Route::get('/', function () {
     /* ===================== DIAGNOSA CBR ===================== */
     Route::get('/diagnosa-cbr', [DiagnosaCbrController::class, 'form'])->name('diagnosa-cbr.form');
     Route::post('/diagnosa-cbr/proses', [DiagnosaCbrController::class, 'proses'])->name('diagnosa-cbr.proses');
+    Route::get('/diagnosa-cbr/kasus', [DiagnosaCbrController::class, 'kasus'])->name('diagnosa-cbr.kasus');
+    Route::get('/diagnosa-cbr/hasil', [DiagnosaCbrController::class, 'hasil'])->name('diagnosa-cbr.hasil');
+    Route::get('/statistik', [DiagnosaCbrController::class, 'statistik'])->name('statistik');
 
-    /* ===================== DIAGNOSA CERTAINTY FACTOR ===================== */
-    Route::get('/diagnosa-cf', [DiagnosaCfController::class, 'index'])->name('diagnosa-cf.index');
+
+    /* ===================== METODE CERTAINTY FACTOR ===================== */
+    Route::get('/diagnosa-cf', [DiagnosaCfController::class, 'form'])->name('diagnosa-cf.form');
     Route::post('/diagnosa-cf/proses', [DiagnosaCfController::class, 'proses'])->name('diagnosa-cf.proses');
+
+    Route::get('/diagnosa-cf/hasil', [DiagnosaCfController::class, 'hasil'])->name('diagnosa-cf.hasil');
+
+    Route::get('/perbandingan-akurasi', [PerbandinganController::class, 'index'])->name('perbandingan.akurasi');
