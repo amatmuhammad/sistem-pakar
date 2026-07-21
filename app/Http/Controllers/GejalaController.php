@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Gejala;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GejalaController extends Controller
 {
     public function index()
     {
         $data = Gejala::paginate(10);
-        return view('gejala.index', compact('data'));
+
+        $totalbobot = Gejala::whereNotNull('bobot_cbr')->count();
+        return view('gejala.index', compact('data', 'totalbobot'));
     }
 
     public function store(Request $request)

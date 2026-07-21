@@ -11,8 +11,10 @@ class HasilDiagnosisCbr extends Model
 
     protected $fillable = [
         'kasus_cbr_id',
-        'penyakit_id',
-        'similarity_final'
+        'penyakit_hama_id',
+        'similarity_final',
+        'solusi_digunakan',
+        'divalidasi_pakar',
     ];
 
     public function kasus()
@@ -22,6 +24,6 @@ class HasilDiagnosisCbr extends Model
 
     public function penyakit()
     {
-        return $this->belongsTo(PenyakitHama::class, 'penyakit_id');
+        return $this->belongsTo(PenyakitHama::class, 'penyakit_hama_id');
     }
 }

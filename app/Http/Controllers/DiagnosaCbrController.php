@@ -17,7 +17,7 @@ class DiagnosaCbrController extends Controller
     public function form()
     {
         $gejala = Gejala::all();
-        // Ambil diagnosa terakhir untuk ditampilkan sebagai riwayat singkat di form jika perlu
+        // Riwayat diagnosis terakhir (opsional)
         $diagnosa = HasilDiagnosisCbr::with('penyakit')->latest()->limit(10)->get();
 
         return view('cbr.diagnosa', compact('gejala', 'diagnosa'));
@@ -25,18 +25,19 @@ class DiagnosaCbrController extends Controller
 
     public function proses(Request $request)
     {
-        // 1. Buat Kasus Baru
+        // 1. Buat kasus baru
         $kasus = KasusCbr::create([
-            'user_id' => 1, // Sesuaikan jika ada auth: auth()->id()
-            'tanggal' => now()
+            'user_id' => 1, // sesuaikan dengan auth()->id() jika ada login
+            'tanggal' => now(),
+            'status_retain' => 'baru',  // default
         ]);
 
-        // 2. Simpan Gejala yang dipilih
+        // 2. Simpan gejala yang dipilih pengguna
         $this->simpanGejala($kasus->id, $request->gejala ?? []);
 
-        // 3. Hitung CBR
+        // 3. Hitung CBR dengan membandingkan ke basis pengetahuan (basis_penyakit_gejala)
         $hasil = $this->hitungCbr($kasus);
-        
+
         if ($hasil) {
             $hasil->load(['kasus.fitur.gejala', 'penyakit']);
         }
@@ -59,85 +60,68 @@ class DiagnosaCbrController extends Controller
 
     private function hitungCbr($kasus)
     {
-        // Ambil gejala kasus baru
+        // Gejala yang dipilih pengguna
         $gejalaBaru = FiturKasusCbr::where('kasus_cbr_id', $kasus->id)
             ->pluck('gejala_id')
             ->toArray();
 
-        if (empty($gejalaBaru)) return null;
+        if (empty($gejalaBaru)) {
+            return null;
+        }
 
-        // Ambil bobot gejala kasus baru
-        $bobotGejala = Gejala::whereIn('id', $gejalaBaru)
-            ->pluck('bobot_cbr', 'id')
-            ->toArray();
+        // Ambil semua penyakit dari basis pengetahuan
+        $penyakitList = PenyakitHama::with('basisGejala')->get();
 
-        $totalBobot = array_sum($bobotGejala);
+        $similarityTertinggi = 0;
+        $penyakitTerbaik = null;
 
-        // Ambil kasus lama (basis pengetahuan) beserta fiturnya
-        $kasusLama = KasusCbr::where('id', '!=', $kasus->id)->with('fitur')->get();
-
-        $similarityMax = 0;
-        $kasusTerbaik = null;
-
-        foreach ($kasusLama as $lama) {
-            $gejalaLama = $lama->fitur->pluck('gejala_id')->toArray();
-            $nilai = 0;
-
-            foreach ($gejalaBaru as $idGejala) {
-                if (in_array($idGejala, $gejalaLama)) {
-                    $nilai += $bobotGejala[$idGejala] ?? 0;
-                }
+        foreach ($penyakitList as $penyakit) {
+            $gejalaPenyakit = $penyakit->basisGejala->pluck('id')->toArray();
+            if (empty($gejalaPenyakit)) {
+                continue;
             }
 
-            $similarity = $totalBobot > 0 ? $nilai / $totalBobot : 0;
+            // Hitung gejala yang cocok
+            $gejalaCocok = array_intersect($gejalaBaru, $gejalaPenyakit);
+            // Rumus sesuai penjelasan: similarity = jumlah gejala cocok / total gejala pada kasus lama
+            $similarity = count($gejalaCocok) / count($gejalaPenyakit);
 
-            if ($similarity > $similarityMax) {
-                $similarityMax = $similarity;
-                $kasusTerbaik = $lama;
+            // Jika ingin menggunakan bobot dari tabel gejala (opsional)
+            // $bobotCocok = Gejala::whereIn('id', $gejalaCocok)->sum('bobot_cbr');
+            // $totalBobotPenyakit = Gejala::whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
+            // $similarity = $totalBobotPenyakit > 0 ? $bobotCocok / $totalBobotPenyakit : 0;
+
+            if ($similarity > $similarityTertinggi) {
+                $similarityTertinggi = $similarity;
+                $penyakitTerbaik = $penyakit;
             }
         }
 
-        // Jika tidak ada kemiripan sama sekali
-        if (!$kasusTerbaik || $similarityMax == 0) {
-             $kasus->update(['nilai_similarity' => 0]);
-             return null;
+        // Jika tidak ada penyakit yang cocok sama sekali
+        if (!$penyakitTerbaik || $similarityTertinggi == 0) {
+            return null;
         }
 
-        // Ambil hasil penyakit dari kasus yang paling mirip
-        // Cari di tabel hasil_diagnosis_cbr berdasarkan id kasus terbaik
-        $hasilLama = HasilDiagnosisCbr::where('kasus_cbr_id', $kasusTerbaik->id)->first();
-        
-        if (!$hasilLama) return null;
-
-        // Update tabel kasus_cbr (kolom penyakit_id yang baru ditambahkan)
-        $kasus->update([
-            'nilai_similarity' => $similarityMax,
-            'penyakit_id' => $hasilLama->penyakit_id
-        ]);
-
-        // Simpan ke tabel hasil_diagnosis_cbr
+        // Simpan hasil diagnosis
         return HasilDiagnosisCbr::create([
             'kasus_cbr_id' => $kasus->id,
-            'penyakit_id' => $hasilLama->penyakit_id,
-            'similarity_final' => $similarityMax
+            'penyakit_hama_id' => $penyakitTerbaik->id,
+            'similarity_final' => $similarityTertinggi,
         ])->load('penyakit');
     }
 
-    public function kasus(Request $request) // Tambahkan parameter Request di sini
+    public function kasus(Request $request)
     {
-        // Mengambil input dari user untuk pagination dan pencarian
         $perPage = $request->get('perPage', 10);
         $search = $request->get('search');
 
         $kasus = KasusCbr::with(['fitur.gejala', 'hasil.penyakit'])
             ->when($search, function ($query) use ($search) {
-                $query->where(function($q) use ($search) {
-                    // 1. Cari berdasarkan ID Kasus
+                $query->where(function ($q) use ($search) {
                     $q->where('id', 'like', "%{$search}%")
-                    // 2. Cari berdasarkan Nama Penyakit (Nested Relationship)
-                    ->orWhereHas('hasil.penyakit', function ($qp) use ($search) {
-                        $qp->where('nama_penyakit', 'like', "%{$search}%");
-                    });
+                      ->orWhereHas('hasil.penyakit', function ($qp) use ($search) {
+                          $qp->where('nama_penyakit', 'like', "%{$search}%");
+                      });
                 });
             })
             ->latest()
@@ -178,13 +162,15 @@ class DiagnosaCbrController extends Controller
         $rataSimilarity = HasilDiagnosisCbr::avg('similarity_final') ?? 0;
         $rataCf = HasilDiagnosisCf::avg('cf_final') ?? 0;
 
+        // Statistik per penyakit dari CBR (kolom foreign key sudah penyakit_hama_id)
         $statistikPenyakit = DB::table('hasil_diagnosis_cbr')
-            ->join('penyakit_hama', 'hasil_diagnosis_cbr.penyakit_id', '=', 'penyakit_hama.id')
+            ->join('penyakit_hama', 'hasil_diagnosis_cbr.penyakit_hama_id', '=', 'penyakit_hama.id')
             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
             ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
             ->orderByDesc('total')
             ->get();
 
+        // Statistik per penyakit dari CF (asumsi kolom penyakit_id, sesuaikan jika berbeda)
         $statistikPenyakitCf = DB::table('hasil_diagnosis_cf')
             ->join('penyakit_hama', 'hasil_diagnosis_cf.penyakit_id', '=', 'penyakit_hama.id')
             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
@@ -192,10 +178,11 @@ class DiagnosaCbrController extends Controller
             ->orderByDesc('total')
             ->get();
 
+        // Gabungan ranking
         $rankingGabungan = DB::query()
             ->fromSub(
                 DB::table('hasil_diagnosis_cbr')
-                    ->join('penyakit_hama', 'hasil_diagnosis_cbr.penyakit_id', '=', 'penyakit_hama.id')
+                    ->join('penyakit_hama', 'hasil_diagnosis_cbr.penyakit_hama_id', '=', 'penyakit_hama.id')
                     ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
                     ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
                     ->unionAll(
@@ -212,6 +199,7 @@ class DiagnosaCbrController extends Controller
             ->limit(8)
             ->get();
 
+        // Tren diagnosa
         $trenCbr = HasilDiagnosisCbr::query()
             ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
             ->groupBy('tanggal')

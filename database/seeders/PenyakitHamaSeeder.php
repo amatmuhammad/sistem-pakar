@@ -2,93 +2,64 @@
 
 namespace Database\Seeders;
 
-use App\Models\PenyakitHama;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
 
 class PenyakitHamaSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        //
-        $data = [
-
-            [
-                'nama_penyakit' => 'Bulai Jagung',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Penyakit jamur yang menyebabkan klorosis pada daun muda.',
-                'solusi' => 'Gunakan benih tahan penyakit dan lakukan rotasi tanaman.'
-            ],
-
-            [
-                'nama_penyakit' => 'Karat Daun',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Ditandai pustul berwarna coklat keemasan pada daun.',
-                'solusi' => 'Gunakan fungisida dan jaga kelembaban lahan.'
-            ],
-
-            [
-                'nama_penyakit' => 'Hawar Daun',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Lesi memanjang pada daun yang menyebabkan daun kering.',
-                'solusi' => 'Gunakan varietas tahan dan sanitasi lahan.'
-            ],
-
-            [
-                'nama_penyakit' => 'Busuk Batang',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Batang melunak dan mudah rebah.',
-                'solusi' => 'Perbaiki drainase dan hindari kelembaban tinggi.'
-            ],
-
-            [
-                'nama_penyakit' => 'Virus Mosaik Jagung',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Daun menunjukkan pola mosaik dan tanaman kerdil.',
-                'solusi' => 'Pengendalian vektor serangga dan penggunaan benih sehat.'
-            ],
-
+        $penyakit = [
             [
                 'nama_penyakit' => 'Ulat Grayak',
                 'jenis' => 'hama',
-                'deskripsi' => 'Ulat memakan daun hingga tersisa tulang daun.',
-                'solusi' => 'Gunakan insektisida biologis dan pengendalian mekanis.'
+                'deskripsi' => 'Serangan Spodoptera frugiperda, larva memakan daun dan titik tumbuh.',
+                'solusi' => 'Insektisida emamektin benzoat, sanitasi lahan, musuh alami.',
             ],
-
             [
-                'nama_penyakit' => 'Penggerek Batang',
+                'nama_penyakit' => 'Penggerek Batang Jagung',
                 'jenis' => 'hama',
-                'deskripsi' => 'Larva menggerek batang hingga tanaman patah.',
-                'solusi' => 'Pengendalian hayati dan pemotongan tanaman terserang.'
+                'deskripsi' => 'Ostrinia furnacalis mengebor batang dan tongkol, menyebabkan layu dan patah.',
+                'solusi' => 'Insektisida sistemik, potong tanaman terserang, pergiliran tanaman.',
             ],
-
             [
-                'nama_penyakit' => 'Penggerek Tongkol',
-                'jenis' => 'hama',
-                'deskripsi' => 'Merusak tongkol dan biji jagung.',
-                'solusi' => 'Monitoring awal dan aplikasi insektisida sesuai dosis.'
+                'nama_penyakit' => 'Penyakit Bulai',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Disebabkan Peronosclerospora maydis, ditandai bercak kuning dan daun menggulung.',
+                'solusi' => 'Fungisida metalaksil, gunakan varietas tahan, atur jarak tanam.',
             ],
-
             [
-                'nama_penyakit' => 'Lalat Bibit',
-                'jenis' => 'hama',
-                'deskripsi' => 'Menyerang tanaman muda sehingga layu dan mati.',
-                'solusi' => 'Perlakuan benih dan sanitasi lahan.'
+                'nama_penyakit' => 'Hawar Daun',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Disebabkan Helminthosporium maydis, bercak coklat keabuan dengan tepi kuning.',
+                'solusi' => 'Fungisida mancozeb, sanitasi sisa tanaman, varietas tahan.',
             ],
-
             [
-                'nama_penyakit' => 'Hama Uret',
-                'jenis' => 'hama',
-                'deskripsi' => 'Larva memakan akar sehingga tanaman tumbang.',
-                'solusi' => 'Pengolahan tanah dan pengendalian biologis.'
+                'nama_penyakit' => 'Karat Daun',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Puccinia sorghi menyebabkan bercak karat oranye pada daun.',
+                'solusi' => 'Fungisida propikonazol, tanam varietas tahan, drainase baik.',
+            ],
+            [
+                'nama_penyakit' => 'Busuk Tongkol',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Disebabkan Fusarium/Giberella, tongkol berlendir, biji merah jambu.',
+                'solusi' => 'Fungisida benih, panen tepat waktu, penyimpanan kering.',
+            ],
+            [
+                'nama_penyakit' => 'Busuk Batang',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Pythium atau Fusarium menyebabkan busuk pangkal batang dan akar.',
+                'solusi' => 'Fungisida benih, drainase baik, hindari luka akar.',
+            ],
+            [
+                'nama_penyakit' => 'Penyakit Embun Tepung',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Erysiphe graminis, permukaan daun dilapisi tepung putih.',
+                'solusi' => 'Fungisida sulfur, jaga kelembaban, varietas toleran.',
             ],
         ];
 
-        foreach ($data as $item) {
-            PenyakitHama::create($item);
-        }
+        DB::table('penyakit_hama')->insert($penyakit);
     }
 }

@@ -30,4 +30,14 @@ class PenyakitHama extends Model
     {
         return $this->hasMany(AturanCf::class, 'penyakit_id');
     }
+
+    public function basisGejala()
+    {
+        return $this->belongsToMany(
+            Gejala::class,              // model tujuan
+            'basis_penyakit_gejala',    // nama pivot table
+            'penyakit_hama_id',         // foreign key dari model ini di pivot
+            'gejala_id'                 // foreign key dari model tujuan di pivot
+        );
+    }
 }

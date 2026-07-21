@@ -29,4 +29,14 @@ class Gejala extends Model
     {
         return $this->hasMany(AturanCf::class);
     }
+
+    public function penyakitHama()
+    {
+        return $this->belongsToMany(
+            PenyakitHama::class,
+            'basis_penyakit_gejala',
+            'gejala_id',
+            'penyakit_hama_id'
+        );
+    }
 }

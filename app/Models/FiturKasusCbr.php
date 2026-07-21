@@ -22,6 +22,6 @@ class FiturKasusCbr extends Model
 
     public function gejala()
     {
-        return $this->belongsTo(Gejala::class);
+        return $this->belongsTo(Gejala::class,'gejala_id');
     }
 }

@@ -65,8 +65,11 @@ class DashboardController extends Controller
 
     private function rankingPenyakit(string $table)
     {
+        // Determine foreign key based on table
+        $foreignKey = $table === 'hasil_diagnosis_cbr' ? 'penyakit_hama_id' : 'penyakit_id';
+
         return DB::table($table)
-            ->join('penyakit_hama', $table . '.penyakit_id', '=', 'penyakit_hama.id')
+            ->join('penyakit_hama', $table . '.' . $foreignKey, '=', 'penyakit_hama.id')
             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
             ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
             ->orderByDesc('total')

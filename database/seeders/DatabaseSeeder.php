@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AturanCfSeeder::class,
             UserSeeder::class,
             KasusCbrSeeder::class,
+            BasisPenyakitGejalaSeeder::class,
         ]);
     }
 }

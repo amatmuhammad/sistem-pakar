@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('hasil_diagnosis_cbr', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kasus_cbr_id')->constrained('kasus_cbr')->onDelete('cascade');
-            $table->foreignId('penyakit_id')->constrained('penyakit_hama')->onDelete('cascade');
-            $table->float('similarity_final')->nullable();
+            $table->foreignId('penyakit_hama_id')->constrained('penyakit_hama')->onDelete('cascade');
+            $table->float('similarity_final'); // nilai similaritas tertinggi
+            $table->text('solusi_digunakan')->nullable(); // opsional, jika ingin menyimpan snapshot solusi
+            $table->boolean('divalidasi_pakar')->default(false);
             $table->timestamps();
         });
 

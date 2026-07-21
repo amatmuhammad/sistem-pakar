@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('kasus_cbr', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
-            $table->datetime('tanggal')->nullable();
-            $table->float('nilai_similarity')->nullable();
+            $table->dateTime('tanggal')->nullable();
+            $table->enum('status_retain', ['baru', 'divalidasi', 'ditolak'])->default('baru'); // untuk tahap Retain
+            $table->text('catatan_validasi')->nullable(); // dari pakar
             $table->timestamps();
         });
 

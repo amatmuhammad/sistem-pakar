@@ -2,53 +2,58 @@
 
 namespace Database\Seeders;
 
-// use App\Models\Gejala;
-// use App\Models\PenyakitHama;
-use App\Models\KasusCbr;
 use App\Models\FiturKasusCbr;
-use Illuminate\Database\Seeder;
 use App\Models\HasilDiagnosisCbr;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\KasusCbr;
+use App\Models\PenyakitHama;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class KasusCbrSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        // Kita buat Basis Kasus yang logic
-        $basisKasus = [
-            ['penyakit_id' => 1, 'gejala' => [1, 15, 6]], // Bulai
-            ['penyakit_id' => 2, 'gejala' => [3, 2, 7]],  // Karat
-            ['penyakit_id' => 6, 'gejala' => [4, 5, 11]], // Ulat Grayak
-            ['penyakit_id' => 7, 'gejala' => [9, 12, 10]], // Penggerek Batang
-            ['penyakit_id' => 8, 'gejala' => [13, 14, 19]], // Penggerek Tongkol
-        ];
+        $gejala = DB::table('gejala')->pluck('id', 'kode_gejala');
+        $p = PenyakitHama::pluck('id', 'nama_penyakit');
 
-        foreach ($basisKasus as $data) {
-            // Buat 10 variasi kasus untuk setiap penyakit agar database CBR kuat
-            for ($i = 0; $i < 10; $i++) {
-                $kasus = KasusCbr::create([
-                    'user_id' => 1,
-                    'tanggal' => now(),
-                    'nilai_similarity' => 1.0
-                ]);
-
-                foreach ($data['gejala'] as $idGejala) {
-                    FiturKasusCbr::create([
-                        'kasus_cbr_id' => $kasus->id,
-                        'gejala_id' => $idGejala,
-                        'nilai' => 1
-                    ]);
-                }
-
-                HasilDiagnosisCbr::create([
-                    'kasus_cbr_id' => $kasus->id,
-                    'penyakit_id' => $data['penyakit_id'],
-                    'similarity_final' => 1.0
-                ]);
-            }
+        // Kasus 1: Gejala mirip Ulat Grayak (4 dari 6)
+        $kasus = KasusCbr::create([
+            'user_id' => null, 'tanggal' => now()->subDays(3), 'status_retain' => 'divalidasi'
+        ]);
+        foreach (['G01','G02','G03','G04'] as $kode) {
+            FiturKasusCbr::create(['kasus_cbr_id' => $kasus->id, 'gejala_id' => $gejala[$kode], 'nilai' => 1]);
         }
+        HasilDiagnosisCbr::create([
+            'kasus_cbr_id' => $kasus->id,
+            'penyakit_hama_id' => $p['Ulat Grayak'],
+            'similarity_final' => 4/6,
+        ]);
+
+        // Kasus 2: Gejala Penggerek Batang (3 dari 6) + tambahan gejala lain
+        $kasus = KasusCbr::create([
+            'user_id' => null, 'tanggal' => now()->subDays(1), 'status_retain' => 'baru'
+        ]);
+        foreach (['G07','G08','G10'] as $kode) {
+            FiturKasusCbr::create(['kasus_cbr_id' => $kasus->id, 'gejala_id' => $gejala[$kode], 'nilai' => 1]);
+        }
+        HasilDiagnosisCbr::create([
+            'kasus_cbr_id' => $kasus->id,
+            'penyakit_hama_id' => $p['Penggerek Batang Jagung'],
+            'similarity_final' => 3/6,
+        ]);
+
+        // Kasus 3: Campuran gejala bulai dan hawar daun
+        $kasus = KasusCbr::create([
+            'user_id' => null, 'tanggal' => now()->subDay(), 'status_retain' => 'baru'
+        ]);
+        foreach (['G13','G14','G18','G16'] as $kode) {
+            FiturKasusCbr::create(['kasus_cbr_id' => $kasus->id, 'gejala_id' => $gejala[$kode], 'nilai' => 1]);
+        }
+        // similarity bisa dihitung oleh sistem, seeder kasih placeholder
+        HasilDiagnosisCbr::create([
+            'kasus_cbr_id' => $kasus->id,
+            'penyakit_hama_id' => $p['Penyakit Bulai'], // kemiripan tertinggi ke bulai
+            'similarity_final' => 3/4, // 3 cocok dari 4 basis bulai (G13,G14,G18)
+        ]);
     }
 }

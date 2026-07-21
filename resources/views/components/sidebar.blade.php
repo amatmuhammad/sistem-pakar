@@ -1,4 +1,5 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    
         <div class="app-brand demo">
         <a href="index.html" class="app-brand-link">
             {{-- <span class="app-brand-logo demo">
@@ -64,7 +65,17 @@
 
         <div class="menu-inner-shadow"></div>
 
-        <ul class="menu-inner py-1">
+        <div class="px-3 py-2">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <img src="../assets/img/avatars/1.png" alt="avatar" class="rounded-circle" width="40" height="40">
+                <div>
+                    <div class="fw-bold">{{ auth()->user()->name ?? 'Administrator' }}</div>
+                    <small class="text-muted" style="color:#9fb6d9">Administrator</small>
+                </div>
+            </div>
+        </div>
+
+        <ul class="menu-inner py-1" id="sidebar-menu-list">
         <!-- Dashboards -->
         <li class="menu-item {{ request()->is('dashboard') ? 'active open' : '' }}">
             <a href="{{ route('dashboard') }}" class="menu-link">
@@ -226,3 +237,5 @@
         </li>
         </ul>
 </aside>
+
+        
