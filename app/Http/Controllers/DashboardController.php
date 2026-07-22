@@ -8,45 +8,58 @@ use App\Models\PenyakitHama;
 use Illuminate\Support\Facades\DB;
 use App\Models\HasilDiagnosisCf;
 use App\Models\HasilDiagnosisCbr;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    //
     public function index()
     {
-        $diagnosaPerTanggal = $this->diagnosaPerTanggal();
-        $penyakitTerbanyak = $this->penyakitTerbanyak();
-
         return view('dashboard.index', [
             'totalGejala' => Gejala::count(),
             'totalPenyakit' => PenyakitHama::count(),
             'totalKasus' => KasusCbr::count(),
             'totalDiagnosa' => HasilDiagnosisCbr::count() + HasilDiagnosisCf::count(),
-            'diagnosaPerTanggal' => $diagnosaPerTanggal,
-            'penyakitTerbanyak' => $penyakitTerbanyak,
+            'diagnosaPerTanggal' => $this->diagnosaPerTanggal(),
+            'penyakitTerbanyak' => $this->penyakitTerbanyak(),
         ]);
     }
 
     private function diagnosaPerTanggal(): array
     {
+        // 1. Buat rentang 7 hari terakhir secara dinamis
+        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
+
         $cbr = HasilDiagnosisCbr::query()
             ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('tanggal')
-            ->orderBy('tanggal')
             ->pluck('total', 'tanggal');
 
         $cf = HasilDiagnosisCf::query()
             ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('tanggal')
-            ->orderBy('tanggal')
             ->pluck('total', 'tanggal');
 
-        $tanggal = $cbr->keys()->merge($cf->keys())->unique()->sort()->values();
+        $labels = [];
+        $cbrData = [];
+        $cfData = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $formattedDate = $date->format('Y-m-d');
+            $displayDate = $date->format('d M'); // Contoh: 16 Jul
+
+            $labels[] = $displayDate;
+            $cbrData[] = (int) ($cbr[$formattedDate] ?? 0);
+            $cfData[] = (int) ($cf[$formattedDate] ?? 0);
+        }
 
         return [
-            'labels' => $tanggal,
-            'cbr' => $tanggal->map(fn ($item) => (int) ($cbr[$item] ?? 0))->values(),
-            'cf' => $tanggal->map(fn ($item) => (int) ($cf[$item] ?? 0))->values(),
+            'labels' => $labels,
+            'cbr' => $cbrData,
+            'cf' => $cfData,
         ];
     }
 
@@ -65,11 +78,11 @@ class DashboardController extends Controller
 
     private function rankingPenyakit(string $table)
     {
-        // Determine foreign key based on table
-        $foreignKey = $table === 'hasil_diagnosis_cbr' ? 'penyakit_hama_id' : 'penyakit_id';
+        // Tentukan foreign key yang sesuai berdasarkan tabel yang dilewatkan
+        $foreignKey = 'penyakit_hama_id';
 
         return DB::table($table)
-            ->join('penyakit_hama', $table . '.' . $foreignKey, '=', 'penyakit_hama.id')
+            ->join('penyakit_hama', "{$table}.{$foreignKey}", '=', 'penyakit_hama.id')
             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
             ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
             ->orderByDesc('total')

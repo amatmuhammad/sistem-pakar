@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreignId('kasus_cf_id')->constrained('kasus_cf')->onDelete('cascade');
 
-            $table->foreignId('penyakit_id')->constrained('penyakit_hama')->onDelete('cascade');
+            $table->foreignId('penyakit_hama_id')->constrained('penyakit_hama')->onDelete('cascade');
 
             $table->float('cf_final')->nullable();
             $table->timestamps();

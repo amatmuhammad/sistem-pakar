@@ -174,18 +174,21 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         ],
         colors: ['#71dd37', '#ffab00'],
-        dataLabels: { enabled: false },
-        stroke: { curve: 'smooth', width: 3 },
         fill: {
             type: 'gradient',
             gradient: {
-                shadeIntensity: 0.35,
-                opacityFrom: 0.35,
+                shadeIntensity: 1,
+                opacityFrom: 0.4,
                 opacityTo: 0.05,
-                stops: [0, 90, 100]
+                stops: [0, 100]
             }
         },
-        markers: { size: 4, strokeWidth: 2, hover: { size: 6 } },
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        // ❌ Hapus semua pengaturan markers (tidak perlu didefinisikan)
+        dataLabels: { enabled: false },
         xaxis: {
             categories: normalizeLabels(diagnosaPerTanggal.labels),
             labels: { style: { colors: chartTextColor } },
@@ -200,7 +203,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 formatter: (value) => Math.round(value)
             }
         },
-        grid: { borderColor: gridColor, strokeDashArray: 5 },
+        grid: {
+            borderColor: gridColor,
+            strokeDashArray: 5,
+            xaxis: { lines: { show: true } }
+        },
         legend: { position: 'top', horizontalAlign: 'right', labels: { colors: chartTextColor } },
         tooltip: { shared: true, intersect: false }
     }).render();

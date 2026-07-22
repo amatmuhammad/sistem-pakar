@@ -3,32 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\HasilDiagnosisCf;
 use App\Models\HasilDiagnosisCbr;
+use App\Models\HasilDiagnosisCf;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class PerbandinganController extends Controller
 {
-    //
     public function index(Request $request)
     {
-        $dataCbr = HasilDiagnosisCbr::with('penyakit')->get();
-        $dataCf  = HasilDiagnosisCf::with('penyakit')->get();
+        // Ambil data, urut berdasarkan created_at terbaru
+        $dataCbr = HasilDiagnosisCbr::with('penyakit')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
 
+        $dataCf = HasilDiagnosisCf::with('penyakit')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+        // Hanya bandingkan sejumlah data terkecil
         $total = min($dataCbr->count(), $dataCf->count());
 
         $benarCbr = 0;
         $benarCf = 0;
-
         $perbandingan = [];
 
         for ($i = 0; $i < $total; $i++) {
-
             $cbr = $dataCbr[$i];
             $cf  = $dataCf[$i];
 
-            $sama = $cbr->penyakit_id == $cf->penyakit_id;
+            // Sesuaikan foreign key (penyakit_hama_id atau penyakit_id)
+            $idCbr = $cbr->penyakit_hama_id;
+            $idCf  = $cf->penyakit_hama_id;
+
+            $sama = ($idCbr == $idCf);
 
             if ($sama) {
                 $benarCbr++;
@@ -36,17 +43,23 @@ class PerbandinganController extends Controller
             }
 
             $perbandingan[] = [
-                'no' => $i + 1,
-                'cbr' => $cbr->penyakit->nama_penyakit,
-                'cf' => $cf->penyakit->nama_penyakit,
-                'status' => $sama ? 'Sama' : 'Berbeda'
+                'no'            => $i + 1,
+                'tanggal_cbr'   => $cbr->created_at->format('d/m/Y H:i'),
+                'tanggal_cf'    => $cf->created_at->format('d/m/Y H:i'),
+                'cbr'           => $cbr->penyakit->nama_penyakit ?? 'Tidak diketahui',
+                'cf'            => $cf->penyakit->nama_penyakit ?? 'Tidak diketahui',
+                'status'        => $sama ? 'Sama' : 'Berbeda',
+                'similarity'    => $cbr->similarity_final,       // nilai asli (0..1)
+                'cf_value'      => $cf->cf_final,                // nilai asli (0..1)
+                'similarity_pct'=> round($cbr->similarity_final * 100, 2), // persentase
+                'cf_pct'        => round($cf->cf_final * 100, 2),
             ];
         }
 
-        $akurasiCbr = $total ? ($benarCbr / $total) * 100 : 0;
-        $akurasiCf  = $total ? ($benarCf / $total) * 100 : 0;
+        $akurasiCbr = $total > 0 ? round(($benarCbr / $total) * 100, 2) : 0;
+        $akurasiCf  = $total > 0 ? round(($benarCf / $total) * 100, 2) : 0;
 
-        // Paginasi manual karena data berupa array
+        // Pagination
         $perPage = (int) $request->get('perPage', 10);
         $perPage = in_array($perPage, [10, 25, 50, 100]) ? $perPage : 10;
 
@@ -62,13 +75,11 @@ class PerbandinganController extends Controller
             $perPage,
             $currentPage,
             [
-                'path' => $currentPath,
-                'query' => $currentQuery,
+                'path'     => $currentPath,
+                'query'    => $currentQuery,
                 'pageName' => 'page',
             ]
         );
-
-        Paginator::useBootstrapFive();
 
         return view('perbandingan.index', compact(
             'perbandinganPaginate',

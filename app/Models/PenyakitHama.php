@@ -18,12 +18,12 @@ class PenyakitHama extends Model
 
     public function hasilCbr()
     {
-        return $this->hasMany(HasilDiagnosisCbr::class, 'penyakit_id');
+        return $this->hasMany(HasilDiagnosisCbr::class, 'penyakit_hama_id');
     }
 
     public function hasilCf()
     {
-        return $this->hasMany(HasilDiagnosisCf::class, 'penyakit_id');
+        return $this->hasMany(HasilDiagnosisCf::class, 'penyakit_hama_id');
     }
 
     public function aturanCf()
@@ -39,5 +39,11 @@ class PenyakitHama extends Model
             'penyakit_hama_id',         // foreign key dari model ini di pivot
             'gejala_id'                 // foreign key dari model tujuan di pivot
         );
+    }
+    // Untuk mengakses basis gejala dengan CF pakar
+    public function basisGejalaPivot()
+    {
+        return $this->belongsToMany(Gejala::class, 'basis_penyakit_gejala')
+                    ->withPivot('cf_pakar');
     }
 }

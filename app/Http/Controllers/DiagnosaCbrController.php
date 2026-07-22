@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Gejala;
-use App\Models\KasusCbr;
-use App\Models\PenyakitHama;
-use Illuminate\Http\Request;
 use App\Models\FiturKasusCbr;
-use App\Models\HasilDiagnosisCf;
+use App\Models\Gejala;
 use App\Models\HasilDiagnosisCbr;
+use App\Models\HasilDiagnosisCf;
+use App\Models\KasusCbr;
 use App\Models\KasusCf;
+use App\Models\PenyakitHama;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DiagnosaCbrController extends Controller
@@ -60,36 +61,22 @@ class DiagnosaCbrController extends Controller
 
     private function hitungCbr($kasus)
     {
-        // Gejala yang dipilih pengguna
-        $gejalaBaru = FiturKasusCbr::where('kasus_cbr_id', $kasus->id)
-            ->pluck('gejala_id')
-            ->toArray();
+        $gejalaBaru = FiturKasusCbr::where('kasus_cbr_id', $kasus->id)->pluck('gejala_id')->toArray();
+        if (empty($gejalaBaru)) return null;
 
-        if (empty($gejalaBaru)) {
-            return null;
-        }
-
-        // Ambil semua penyakit dari basis pengetahuan
-        $penyakitList = PenyakitHama::with('basisGejala')->get();
-
+        $penyakitList = PenyakitHama::with('basisGejala')->get(); // relasi tanpa cf_pakar
         $similarityTertinggi = 0;
         $penyakitTerbaik = null;
 
         foreach ($penyakitList as $penyakit) {
             $gejalaPenyakit = $penyakit->basisGejala->pluck('id')->toArray();
-            if (empty($gejalaPenyakit)) {
-                continue;
-            }
+            if (empty($gejalaPenyakit)) continue;
 
-            // Hitung gejala yang cocok
-            $gejalaCocok = array_intersect($gejalaBaru, $gejalaPenyakit);
-            // Rumus sesuai penjelasan: similarity = jumlah gejala cocok / total gejala pada kasus lama
-            $similarity = count($gejalaCocok) / count($gejalaPenyakit);
-
-            // Jika ingin menggunakan bobot dari tabel gejala (opsional)
-            // $bobotCocok = Gejala::whereIn('id', $gejalaCocok)->sum('bobot_cbr');
-            // $totalBobotPenyakit = Gejala::whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
-            // $similarity = $totalBobotPenyakit > 0 ? $bobotCocok / $totalBobotPenyakit : 0;
+            // Opsional: gunakan bobot dari tabel gejala
+            $bobotCocok = Gejala::whereIn('id', $gejalaBaru)
+                            ->whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
+            $totalBobot = Gejala::whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
+            $similarity = $totalBobot > 0 ? $bobotCocok / $totalBobot : 0;
 
             if ($similarity > $similarityTertinggi) {
                 $similarityTertinggi = $similarity;
@@ -97,19 +84,15 @@ class DiagnosaCbrController extends Controller
             }
         }
 
-        // Jika tidak ada penyakit yang cocok sama sekali
-        if (!$penyakitTerbaik || $similarityTertinggi == 0) {
-            return null;
-        }
+        if (!$penyakitTerbaik || $similarityTertinggi == 0) return null;
 
-        // Simpan hasil diagnosis
         return HasilDiagnosisCbr::create([
             'kasus_cbr_id' => $kasus->id,
             'penyakit_hama_id' => $penyakitTerbaik->id,
             'similarity_final' => $similarityTertinggi,
-        ])->load('penyakit');
+        ]);
     }
-
+    
     public function kasus(Request $request)
     {
         $perPage = $request->get('perPage', 10);
@@ -152,6 +135,7 @@ class DiagnosaCbrController extends Controller
         return view('cbr.hasil', compact('hasil'));
     }
 
+
     public function statistik()
     {
         $totalKasus = KasusCbr::count();
@@ -162,32 +146,40 @@ class DiagnosaCbrController extends Controller
         $rataSimilarity = HasilDiagnosisCbr::avg('similarity_final') ?? 0;
         $rataCf = HasilDiagnosisCf::avg('cf_final') ?? 0;
 
-        // Statistik per penyakit dari CBR (kolom foreign key sudah penyakit_hama_id)
+        // 1. Tentukan rentang waktu 7 hari terakhir
+        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
+
+        // Statistik per penyakit dari CBR (Filter 7 hari terakhir)
         $statistikPenyakit = DB::table('hasil_diagnosis_cbr')
             ->join('penyakit_hama', 'hasil_diagnosis_cbr.penyakit_hama_id', '=', 'penyakit_hama.id')
+            ->whereBetween('hasil_diagnosis_cbr.created_at', [$startDate, $endDate])
             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
             ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
             ->orderByDesc('total')
             ->get();
 
-        // Statistik per penyakit dari CF (asumsi kolom penyakit_id, sesuaikan jika berbeda)
+        // Statistik per penyakit dari CF (Filter 7 hari terakhir)
         $statistikPenyakitCf = DB::table('hasil_diagnosis_cf')
-            ->join('penyakit_hama', 'hasil_diagnosis_cf.penyakit_id', '=', 'penyakit_hama.id')
+            ->join('penyakit_hama', 'hasil_diagnosis_cf.penyakit_hama_id', '=', 'penyakit_hama.id')
+            ->whereBetween('hasil_diagnosis_cf.created_at', [$startDate, $endDate])
             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
             ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
             ->orderByDesc('total')
             ->get();
 
-        // Gabungan ranking
+        // Gabungan ranking (Filter 7 hari terakhir)
         $rankingGabungan = DB::query()
             ->fromSub(
                 DB::table('hasil_diagnosis_cbr')
                     ->join('penyakit_hama', 'hasil_diagnosis_cbr.penyakit_hama_id', '=', 'penyakit_hama.id')
+                    ->whereBetween('hasil_diagnosis_cbr.created_at', [$startDate, $endDate])
                     ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
                     ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
                     ->unionAll(
                         DB::table('hasil_diagnosis_cf')
-                            ->join('penyakit_hama', 'hasil_diagnosis_cf.penyakit_id', '=', 'penyakit_hama.id')
+                            ->join('penyakit_hama', 'hasil_diagnosis_cf.penyakit_hama_id', '=', 'penyakit_hama.id')
+                            ->whereBetween('hasil_diagnosis_cf.created_at', [$startDate, $endDate])
                             ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
                             ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
                     ),
@@ -199,25 +191,38 @@ class DiagnosaCbrController extends Controller
             ->limit(8)
             ->get();
 
-        // Tren diagnosa
+        // 2. Tren diagnosa di-generate pasti 7 hari terakhir (beserta tanggal kosong yang diisi 0)
         $trenCbr = HasilDiagnosisCbr::query()
             ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('tanggal')
-            ->orderBy('tanggal')
             ->pluck('total', 'tanggal');
 
         $trenCf = HasilDiagnosisCf::query()
             ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('tanggal')
-            ->orderBy('tanggal')
             ->pluck('total', 'tanggal');
 
-        $tanggalTren = $trenCbr->keys()->merge($trenCf->keys())->unique()->sort()->values();
+        // Looping 7 hari penuh agar label selalu lengkap 7 hari ke belakang
+        $tanggalTren = [];
+        $cbrData = [];
+        $cfData = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $formattedDate = $date->format('Y-m-d');
+            $displayDate = $date->format('d M'); // Format tampilan label (misal: 16 Jul)
+
+            $tanggalTren[] = $displayDate;
+            $cbrData[] = (int) ($trenCbr[$formattedDate] ?? 0);
+            $cfData[] = (int) ($trenCf[$formattedDate] ?? 0);
+        }
 
         $trenDiagnosa = [
             'labels' => $tanggalTren,
-            'cbr' => $tanggalTren->map(fn ($item) => (int) ($trenCbr[$item] ?? 0))->values(),
-            'cf' => $tanggalTren->map(fn ($item) => (int) ($trenCf[$item] ?? 0))->values(),
+            'cbr' => $cbrData,
+            'cf' => $cfData,
         ];
 
         $diagnosaTertinggi = $rankingGabungan->first();
@@ -246,4 +251,5 @@ class DiagnosaCbrController extends Controller
             'trenDiagnosa'
         ));
     }
+
 }

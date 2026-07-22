@@ -11,7 +11,7 @@ class HasilDiagnosisCf extends Model
 
     protected $fillable = [
         'kasus_cf_id',
-        'penyakit_id',
+        'penyakit_hama_id',
         'cf_final'
     ];
 
@@ -22,6 +22,6 @@ class HasilDiagnosisCf extends Model
 
     public function penyakit()
     {
-        return $this->belongsTo(PenyakitHama::class, 'penyakit_id');
+        return $this->belongsTo(PenyakitHama::class, 'penyakit_hama_id');
     }
 }

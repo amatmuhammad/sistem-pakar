@@ -14,6 +14,7 @@ class BasisPenyakitGejala extends Model
     protected $fillable = [
         'penyakit_hama_id',
         'gejala_id',
+        'cf_pakar',
     ];
 
     /**

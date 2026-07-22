@@ -7,13 +7,12 @@
 
     <!-- CARD AKURASI -->
     <div class="row mb-4">
-
         <div class="col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <small class="text-muted">Akurasi CBR</small>
                     <h3 class="fw-bold text-primary">
-                        {{ number_format($akurasiCbr,2) }}%
+                        {{ number_format($akurasiCbr, 2) }}%
                     </h3>
                     <small class="text-muted">Dari {{ $total }} data yang dibandingkan</small>
                 </div>
@@ -25,13 +24,12 @@
                 <div class="card-body">
                     <small class="text-muted">Akurasi Certainty Factor</small>
                     <h3 class="fw-bold text-success">
-                        {{ number_format($akurasiCf,2) }}%
+                        {{ number_format($akurasiCf, 2) }}%
                     </h3>
                     <small class="text-muted">Dari {{ $total }} data yang dibandingkan</small>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- TABEL PERBANDINGAN -->
@@ -57,8 +55,10 @@
                     <thead class="table-success">
                         <tr>
                             <th>No</th>
-                            <th>Hasil CBR</th>
-                            <th>Hasil CF</th>
+                            <th>Tanggal CBR</th>
+                            <th>Diagnosis CBR</th>
+                            <th>Tanggal CF</th>
+                            <th>Diagnosis CF</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -66,17 +66,25 @@
                         @forelse($perbandinganPaginate as $p)
                         <tr>
                             <td>{{ $perbandinganPaginate->firstItem() + $loop->index }}</td>
-                            <td>{{ $p['cbr'] }}</td>
-                            <td>{{ $p['cf'] }}</td>
+                            <td>{{ $p['tanggal_cbr'] }}</td>
                             <td>
-                                <span class="badge {{ $p['status']=='Sama' ? 'bg-label-success':'bg-label-danger' }}">
+                                {{ $p['cbr'] }}
+                                <small class="text-muted d-block">({{ $p['similarity_pct'] }}%)</small>
+                            </td>
+                            <td>{{ $p['tanggal_cf'] }}</td>
+                            <td>
+                                {{ $p['cf'] }}
+                                <small class="text-muted d-block">({{ $p['cf_pct'] }}%)</small>
+                            </td>
+                            <td>
+                                <span class="badge {{ $p['status'] == 'Sama' ? 'bg-label-success' : 'bg-label-danger' }}">
                                     {{ $p['status'] }}
                                 </span>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="bx bx-search-alt-2 mb-2" style="font-size: 2rem;"></i>
                                     <p class="mb-0">Belum ada data perbandingan.</p>

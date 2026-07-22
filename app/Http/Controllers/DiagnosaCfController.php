@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Gejala;
 use App\Models\KasusCf;
-use App\Models\AturanCf;
+use App\Models\PenyakitHama;
 use Illuminate\Http\Request;
 use App\Models\GejalaKasusCf;
 use App\Models\HasilDiagnosisCf;
@@ -21,11 +21,10 @@ class DiagnosaCfController extends Controller
 
     public function proses(Request $request)
     {
-        // 1. Filter input CF yang valid (> 0)
-        $cfInput = array_filter(
-            $request->cf ?? [],
-            fn ($v) => $v !== null && $v !== '' && (float) $v > 0
-        );
+        $cfInput = $request->cf ?? [];
+        $cfInput = array_filter($cfInput, function ($nilaiUser) {
+            return $nilaiUser !== null && $nilaiUser !== '' && (float) $nilaiUser > 0;
+        });
 
         if (empty($cfInput)) {
             return redirect()
@@ -35,30 +34,28 @@ class DiagnosaCfController extends Controller
 
         try {
             return DB::transaction(function () use ($cfInput) {
-                // 2. Simpan Header Kasus
+                // Simpan kasus
                 $kasus = KasusCf::create([
                     'user_id' => 1,
-                    'tanggal' => now()
+                    'tanggal'  => now(),
                 ]);
 
-                // 3. Simpan Gejala & Nilai CF dari User
+                // Simpan detail gejala (tabel gejala_kasus_cf)
                 foreach ($cfInput as $gejalaId => $nilaiUser) {
                     GejalaKasusCf::create([
-                        'kasus_cf_id' => $kasus->id,
-                        'gejala_id' => $gejalaId,
-                        'nilai_cf_user' => (float) $nilaiUser
+                        'kasus_cf_id'   => $kasus->id,
+                        'gejala_id'     => $gejalaId,
+                        'nilai_cf_user' => (float) $nilaiUser,
                     ]);
                 }
 
-                // 4. Hitung CF
+                // Hitung CF
                 $hasil = $this->hitungCf($kasus->id);
 
-                // 5. Jika tidak ada rule yang cocok -> abort transaksi
-                if (! $hasil) {
+                if (!$hasil) {
                     throw new \RuntimeException('NO_MATCH');
                 }
 
-                // 6. Load relasi untuk ditampilkan di form
                 $hasil->load(['penyakit', 'kasus.gejala.gejala']);
 
                 return redirect()
@@ -67,7 +64,6 @@ class DiagnosaCfController extends Controller
             });
         } catch (\RuntimeException $e) {
             if ($e->getMessage() === 'NO_MATCH') {
-                // Transaksi otomatis di-rollback (kasus & gejala ikut terhapus)
                 return redirect()
                     ->route('diagnosa-cf.form')
                     ->with('error', 'Gejala yang dipilih tidak cukup untuk menentukan penyakit. Silakan pilih gejala lain.');
@@ -81,65 +77,53 @@ class DiagnosaCfController extends Controller
         $gejalaUser = GejalaKasusCf::where('kasus_cf_id', $kasusId)->get();
         if ($gejalaUser->isEmpty()) return null;
 
+        $penyakitList = PenyakitHama::with('basisGejalaPivot')->get();
         $cfPenyakit = [];
 
-        foreach ($gejalaUser as $g) {
-            // Ambil semua rule yang relevan untuk gejala ini
-            $rules = AturanCf::where('gejala_id', $g->gejala_id)->get();
+        foreach ($penyakitList as $penyakit) {
+            $cfCombine = 0;
 
-            foreach ($rules as $rule) {
-                // CF(H,E) = (MB - MD) * CFuser
-                $cfRule = ($rule->mb - $rule->md) * (float) $g->nilai_cf_user;
-                $pid = $rule->penyakit_id;
-
-                if (! isset($cfPenyakit[$pid])) {
-                    $cfPenyakit[$pid] = $cfRule;
-                } else {
-                    $cfPenyakit[$pid] = $this->combineCf($cfPenyakit[$pid], $cfRule);
+            foreach ($gejalaUser as $g) {
+                $basis = $penyakit->basisGejalaPivot->firstWhere('id', $g->gejala_id);
+                if ($basis && isset($basis->pivot->cf_pakar)) {
+                    $cfGejala = $basis->pivot->cf_pakar * $g->nilai_cf_user;
+                    $cfCombine = ($cfCombine == 0) 
+                        ? $cfGejala 
+                        : $cfCombine + $cfGejala * (1 - $cfCombine);
                 }
+            }
+
+            if ($cfCombine > 0) {
+                $cfPenyakit[$penyakit->id] = $cfCombine;
             }
         }
 
         if (empty($cfPenyakit)) return null;
 
-        // Urutkan dari nilai keyakinan tertinggi
+        // Urutkan CF tertinggi
         arsort($cfPenyakit);
-
-        // Pastikan nilai tetap di rentang -1 .. 1
-        $cfPenyakit = array_map(fn ($v) => max(-1, min(1, $v)), $cfPenyakit);
-
+        
+        // Ambil penyakit dengan CF tertinggi
         $penyakitId = array_key_first($cfPenyakit);
-        $cfFinal = $cfPenyakit[$penyakitId] ?? 0;
+        $cfFinal = $cfPenyakit[$penyakitId];
 
-        // Abaikan jika nilai keyakinan akhir <= 0 (tidak meyakinkan)
-        if ($cfFinal <= 0) return null;
+        // Validasi final sebelum simpan
+        if (empty($penyakitId) || $cfFinal <= 0) {
+            return null;
+        }
 
+        // Cek apakah penyakit_id valid
+        $penyakitExists = PenyakitHama::find($penyakitId);
+        if (!$penyakitExists) {
+            return null;
+        }
+
+        // Simpan hasil
         return HasilDiagnosisCf::create([
-            'kasus_cf_id' => $kasusId,
-            'penyakit_id' => $penyakitId,
-            'cf_final' => $cfFinal
-        ])->load('penyakit');
-    }
-
-    /**
-     * Kombinasi dua nilai CF sesuai aturan Certainty Factor:
-     *  - Kedua positif : CF1 + CF2 * (1 - CF1)
-     *  - Kedua negatif : CF1 + CF2 * (1 + CF1)
-     *  - Tanda beda    : (CF1 + CF2) / (1 - min(|CF1|, |CF2|))
-     */
-    private function combineCf($cf1, $cf2)
-    {
-        if ($cf1 >= 0 && $cf2 >= 0) {
-            return $cf1 + $cf2 * (1 - $cf1);
-        }
-
-        if ($cf1 < 0 && $cf2 < 0) {
-            return $cf1 + $cf2 * (1 + $cf1);
-        }
-
-        $denom = 1 - min(abs($cf1), abs($cf2));
-
-        return $denom != 0 ? ($cf1 + $cf2) / $denom : 0;
+            'kasus_cf_id'      => $kasusId,
+            'penyakit_hama_id' => $penyakitId,
+            'cf_final'         => $cfFinal,
+        ]);
     }
 
     public function hasil(Request $request)

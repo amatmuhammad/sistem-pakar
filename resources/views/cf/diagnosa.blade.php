@@ -7,15 +7,27 @@
             <h4 class="fw-bold mb-1">Diagnosa Certainty Factor</h4>
             <small class="text-muted">Pilih gejala dan tingkat keyakinan untuk menganalisis hama & penyakit</small>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDiagnosa">
-            <i class="bx bx-plus me-1"></i> Mulai Diagnosa
-        </button>
     </div>
-
+    
     <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title mb-0">Riwayat Diagnosa</h5> <!-- Sesuaikan judul card jika ada -->
+            
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <!-- Tombol Mulai Diagnosa -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDiagnosa">
+                    <i class="bx bx-plus me-1"></i> Mulai Diagnosa
+                </button>
+                
+                <!-- Tombol Bersihkan Riwayat -->
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalBersihkanRiwayat">
+                    <i class="bx bx-trash me-1"></i> Bersihkan Riwayat
+                </button>
+            </div>
+        </div>
         <div class="card-body">
             @if(session('hasil'))
-                @php $res = session('hasil'); @endphp
+            @php $res = session('hasil'); @endphp
                 <div class="card shadow-none border border-primary">
                     <div class="card-body row p-4 g-0">
                         <div class="col-md-6 border-end-md">
