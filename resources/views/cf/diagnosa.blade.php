@@ -20,9 +20,12 @@
                 </button>
                 
                 <!-- Tombol Bersihkan Riwayat -->
-                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalBersihkanRiwayat">
-                    <i class="bx bx-trash me-1"></i> Bersihkan Riwayat
-                </button>
+                <form action="{{ route('diagnosa-cf.clear-session') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bx bx-trash me-1"></i> Bersihkan Hasil Diagnosa
+                    </button>
+                </form>
             </div>
         </div>
         <div class="card-body">

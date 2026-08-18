@@ -24,24 +24,40 @@ class DiagnosaCbrController extends Controller
         return view('cbr.diagnosa', compact('gejala', 'diagnosa'));
     }
 
+    public function clearSession(Request $request)
+    {
+        $request->session()->forget('hasil');
+
+        return redirect()
+            ->route('diagnosa-cbr.form')
+            ->with('success', 'Riwayat hasil diagnosa sesi berhasil dibersihkan.');
+    }
+
     public function proses(Request $request)
     {
-        // 1. Buat kasus baru
-        $kasus = KasusCbr::create([
-            'user_id' => 1, // sesuaikan dengan auth()->id() jika ada login
-            'tanggal' => now(),
-            'status_retain' => 'baru',  // default
+        // Validasi
+        $request->validate([
+            'gejala' => 'required|array|min:1',
+            'gejala.*' => 'exists:gejala,id',
         ]);
 
-        // 2. Simpan gejala yang dipilih pengguna
-        $this->simpanGejala($kasus->id, $request->gejala ?? []);
+        $kasus = KasusCbr::create([
+            'user_id' => 1,
+            'tanggal' => now(),
+            'status_retain' => 'baru',
+        ]);
 
-        // 3. Hitung CBR dengan membandingkan ke basis pengetahuan (basis_penyakit_gejala)
+        $this->simpanGejala($kasus->id, $request->gejala);
+
         $hasil = $this->hitungCbr($kasus);
 
-        if ($hasil) {
-            $hasil->load(['kasus.fitur.gejala', 'penyakit']);
+        if (!$hasil) {
+            return redirect()
+                ->route('diagnosa-cbr.form')
+                ->with('error', 'Tidak ada penyakit yang cocok dengan gejala yang dipilih. Silakan pilih gejala lain atau tambahkan gejala.');
         }
+
+        $hasil->load(['kasus.fitur.gejala', 'penyakit']);
 
         return redirect()
             ->route('diagnosa-cbr.form')

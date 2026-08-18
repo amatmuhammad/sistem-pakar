@@ -18,7 +18,7 @@
         <!-- Profile info untuk Admin -->
         <div class="px-3 py-2">
             <div class="d-flex align-items-center gap-2 mb-3">
-                <img src="{{ asset('assets/img/avatars/1.png') }}" alt="avatar" class="rounded-circle" width="40" height="40">
+                <img src="{{ asset('assets/img/avatars/user.jpeg') }}" alt="avatar" class="rounded-circle" width="40" height="40">
                 <div>
                     <div class="fw-bold">{{ auth()->user()->name ?? 'Administrator' }}</div>
                     <small class="badge bg-label-primary">Administrator</small>

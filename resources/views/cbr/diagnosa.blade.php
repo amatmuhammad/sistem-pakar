@@ -18,10 +18,12 @@
                     <i class="bx bx-search"></i> Mulai Diagnosa
                 </button>
 
-                <button onclick="location.reload()"
-                        class="btn btn-outline-danger btn-md">
-                    <i class="bx bx-refresh"></i> Bersihkan riwayat
-                </button>
+                <form action="{{ route('diagnosa-cbr.clear-session') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger btn-md">
+                        <i class="bx bx-trash me-1"></i> Bersihkan Hasil Diagnosa
+                    </button>
+                </form>
 
             </div>
 

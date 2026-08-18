@@ -39,4 +39,5 @@ class Gejala extends Model
             'penyakit_hama_id'
         );
     }
+    
 }

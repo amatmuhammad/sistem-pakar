@@ -37,8 +37,7 @@
              * Cukup letakkan file gambar Anda di folder: public/assets/img/layouts/bg-login.jpg
              * Atau ubah nama file pada url('{{ asset("assets/img/layouts/bg-login.jpg") }}') di bawah ini.
              */
-            background-image: linear-gradient(135deg, rgba(236, 253, 245, 0.85) 0%, rgba(209, 250, 229, 0.85) 100%), 
-                              url('{{ asset("assets/img/layouts/kebun jagung.jpeg") }}');
+            background-image: url('{{ asset("assets/img/layouts/kebun jagung.jpeg") }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -48,7 +47,7 @@
         /* Mengubah warna bintik-bintik ornamen latar belakang menjadi kuning */
         .authentication-wrapper.authentication-basic .authentication-inner::before,
         .authentication-wrapper.authentication-basic .authentication-inner::after {
-            background: #f59e0b !important;
+            background: rgb(255, 238, 0) !important;
         }
         .auth-card {
             border: none;
@@ -133,17 +132,11 @@
                     <div class="card-body p-4 p-sm-5">
                         <!-- Logo & Brand Header -->
                         <div class="app-brand justify-content-center mb-4 gap-2">
-                            <div class="brand-icon">
-                                <i class="bx bx-brain"></i>
-                            </div>
-                            <div class="d-flex flex-column ms-2">
-                                <span class="app-brand-text demo text-body fw-bold text-uppercase fs-5" style="letter-spacing: 0.5px;">Sistem Pakar</span>
-                                <small class="text-green-accent fw-semibold" style="margin-top: -4px;">CBR & Certainty Factor</small>
-                            </div>
+                            <img src="{{ asset('assets/img/elements/Logo.png') }}" alt="Logo"  style="object-fit: cover; border-radius: 8px; height:100px; width:250px;">
                         </div>
                         <!-- /Logo -->
 
-                        <h4 class="mb-1 text-center fw-bold">Selamat Datang Kembali! 👋</h4>
+                        <h4 class="mb-1 text-center fw-bold">Selamat Datang! </h4>
                         <p class="mb-4 text-center text-muted fs-6">Silakan masuk ke akun Anda untuk mengelola sistem pakar.</p>
 
                         <!-- Flash Message / Alerts -->
@@ -244,7 +237,7 @@
                         </div>
 
                         <!-- Demo Credentials Box -->
-                        <div class="demo-credentials mt-4">
+                        {{-- <div class="demo-credentials mt-4">
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <i class="bx bx-info-circle text-green-accent fs-5"></i>
                                 <strong class="text-green-accent fs-6">Akun Demo (Default)</strong>
@@ -253,7 +246,7 @@
                                 <div><strong>Email:</strong> <code>system@mail.com</code></div>
                                 <div><strong>Password:</strong> <code>password</code></div>
                             </div>
-                        </div>
+                        </div> --}}
 
                     </div>
                 </div>

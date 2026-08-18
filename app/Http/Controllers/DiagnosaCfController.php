@@ -19,6 +19,15 @@ class DiagnosaCfController extends Controller
         ]);
     }
 
+    public function clearSession(Request $request)
+    {
+        $request->session()->forget('hasil');
+
+        return redirect()
+            ->route('diagnosa-cf.form')
+            ->with('success', 'Riwayat hasil diagnosa sesi berhasil dibersihkan.');
+    }
+
     public function proses(Request $request)
     {
         $cfInput = $request->cf ?? [];
@@ -108,15 +117,16 @@ class DiagnosaCfController extends Controller
         $cfFinal = $cfPenyakit[$penyakitId];
 
         // Validasi final sebelum simpan
-        if (empty($penyakitId) || $cfFinal <= 0) {
+        $threshold = 0.5; // Ambang batas CF minimal untuk dianggap valid
+        if ($cfFinal < $threshold) {
             return null;
         }
 
         // Cek apakah penyakit_id valid
-        $penyakitExists = PenyakitHama::find($penyakitId);
-        if (!$penyakitExists) {
-            return null;
-        }
+        // $penyakitExists = PenyakitHama::find($penyakitId);
+        // if (!$penyakitExists) {
+        //     return null;
+        // }
 
         // Simpan hasil
         return HasilDiagnosisCf::create([
