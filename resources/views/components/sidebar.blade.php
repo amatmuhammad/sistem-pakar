@@ -165,9 +165,9 @@
                 <span class="menu-header-text">Autentikasi</span>
             </li>
             <li class="menu-item">
-                <a href="{{ route('guest.logout') }}" class="menu-link text-primary fw-semibold">
-                    <i class="menu-icon tf-icons bx bx-log-in-circle text-primary"></i>
-                    <div class="text-truncate">Login Admin</div>
+                <a href="{{ route('guest.logout') }}" class="menu-link text-danger fw-semibold">
+                    <i class="menu-icon tf-icons bx bx-log-in-circle text-danger"></i>
+                    <div class="text-truncate ">Keluar</div>
                 </a>
             </li>
         </ul>
