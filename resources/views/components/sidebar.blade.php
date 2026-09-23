@@ -116,7 +116,7 @@
             <li class="menu-item {{ request()->is('perbandingan-akurasi*') ? 'active open' : '' }}">
                 <a href="{{ route('perbandingan.akurasi') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-check-double"></i>
-                    <div class="text-truncate" data-i18n="Basic">Akurasi</div>
+                    <div class="text-truncate" data-i18n="Basic">Perbandingan</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->is('statistik*') ? 'active open' : '' }}">

@@ -2,71 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\HasilDiagnosisCbr;
 use App\Models\HasilDiagnosisCf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PerbandinganController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil data, urut berdasarkan created_at terbaru
-        $dataCbr = HasilDiagnosisCbr::with('penyakit')
-                        ->orderBy('created_at', 'desc')
-                        ->get();
+        $perPage = (int) $request->get('perPage', 10);
+        $perPage = in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 10;
 
-        $dataCf = HasilDiagnosisCf::with('penyakit')
-                        ->orderBy('created_at', 'desc')
-                        ->get();
+        // Urut terbaru lebih dulu agar pasangan dengan gejala sama dibuat 1:1.
+        $dataCbr = HasilDiagnosisCbr::with(['kasus.fitur.gejala', 'penyakit'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
 
-        // Hanya bandingkan sejumlah data terkecil
-        $total = min($dataCbr->count(), $dataCf->count());
+        $dataCf = HasilDiagnosisCf::with(['kasus.gejala.gejala', 'penyakit'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
 
-        $benarCbr = 0;
-        $benarCf = 0;
-        $perbandingan = [];
+        // Kelompokkan CF berdasarkan user + set gejala yang sama.
+        $cfByDiagnosis = [];
 
-        for ($i = 0; $i < $total; $i++) {
-            $cbr = $dataCbr[$i];
-            $cf  = $dataCf[$i];
+        foreach ($dataCf as $cf) {
+            $key = $this->diagnosisKey($cf);
 
-            // Sesuaikan foreign key (penyakit_hama_id atau penyakit_id)
-            $idCbr = $cbr->penyakit_hama_id;
-            $idCf  = $cf->penyakit_hama_id;
-
-            $sama = ($idCbr == $idCf);
-
-            if ($sama) {
-                $benarCbr++;
-                $benarCf++;
+            if ($key === '') {
+                continue;
             }
 
+            $cfByDiagnosis[$key][] = $cf;
+        }
+
+        $perbandingan = [];
+
+        foreach ($dataCbr as $cbr) {
+            $key = $this->diagnosisKey($cbr);
+
+            if ($key === '' || empty($cfByDiagnosis[$key])) {
+                continue;
+            }
+
+            // array_shift memastikan satu hasil CF tidak dipakai lebih dari satu kali.
+            $cf = array_shift($cfByDiagnosis[$key]);
+            $cbrTanggal = $this->formatTanggal($cbr->kasus?->tanggal ?: $cbr->created_at);
+            $cfTanggal = $this->formatTanggal($cf->kasus?->tanggal ?: $cf->created_at);
+            $sama = (int) $cbr->penyakit_hama_id === (int) $cf->penyakit_hama_id;
+
             $perbandingan[] = [
-                'no'            => $i + 1,
-                'tanggal_cbr'   => $cbr->created_at->format('d/m/Y H:i'),
-                'tanggal_cf'    => $cf->created_at->format('d/m/Y H:i'),
-                'cbr'           => $cbr->penyakit->nama_penyakit ?? 'Tidak diketahui',
-                'cf'            => $cf->penyakit->nama_penyakit ?? 'Tidak diketahui',
-                'status'        => $sama ? 'Sama' : 'Berbeda',
-                'similarity'    => $cbr->similarity_final,       // nilai asli (0..1)
-                'cf_value'      => $cf->cf_final,                // nilai asli (0..1)
-                'similarity_pct'=> round($cbr->similarity_final * 100, 2), // persentase
-                'cf_pct'        => round($cf->cf_final * 100, 2),
+                'no' => count($perbandingan) + 1,
+                'id_cbr' => $cbr->id,
+                'id_cf' => $cf->id,
+                'tanggal_cbr' => $cbrTanggal,
+                'tanggal_cf' => $cfTanggal,
+                'cbr' => $cbr->penyakit?->nama_penyakit ?? 'Tidak diketahui',
+                'cf' => $cf->penyakit?->nama_penyakit ?? 'Tidak diketahui',
+                'status' => $sama ? 'Sama' : 'Berbeda',
+                'similarity_pct' => round((float) $cbr->similarity_final * 100, 2),
+                'cf_pct' => round((float) $cf->cf_final * 100, 2),
             ];
         }
 
-        $akurasiCbr = $total > 0 ? round(($benarCbr / $total) * 100, 2) : 0;
-        $akurasiCf  = $total > 0 ? round(($benarCf / $total) * 100, 2) : 0;
-
-        // Pagination
-        $perPage = (int) $request->get('perPage', 10);
-        $perPage = in_array($perPage, [10, 25, 50, 100]) ? $perPage : 10;
-
-        $currentPage = (int) $request->get('page', 1) ?: 1;
-        $currentPath = $request->url();
-        $currentQuery = $request->except('page');
-
+        $currentPage = max(1, (int) $request->get('page', 1));
         $items = collect($perbandingan)->forPage($currentPage, $perPage)->values();
 
         $perbandinganPaginate = new LengthAwarePaginator(
@@ -75,17 +77,44 @@ class PerbandinganController extends Controller
             $perPage,
             $currentPage,
             [
-                'path'     => $currentPath,
-                'query'    => $currentQuery,
-                'pageName' => 'page',
+                'path' => $request->url(),
+                'query' => $request->except('page'),
             ]
         );
 
-        return view('perbandingan.index', compact(
-            'perbandinganPaginate',
-            'akurasiCbr',
-            'akurasiCf',
-            'total'
-        ));
+        return view('perbandingan.index', [
+            'perbandinganPaginate' => $perbandinganPaginate,
+        ]);
+    }
+
+    private function formatTanggal($tanggal): ?string
+    {
+        return $tanggal ? Carbon::parse($tanggal)->format('d/m/Y H:i') : null;
+    }
+
+    /**
+     * Hanya diagnosis dengan user dan set gejala yang sama yang dapat
+     * dipasangkan. Hasil tanpa key tidak dipaksakan.
+     */
+    private function diagnosisKey($hasil): string
+    {
+        $gejala = $hasil instanceof HasilDiagnosisCbr
+            ? ($hasil->kasus?->fitur ?? collect())
+            : ($hasil->kasus?->gejala ?? collect());
+
+        $gejalaIds = collect($gejala)
+            ->pluck('gejala_id')
+            ->map(static fn ($id) => (int) $id)
+            ->unique()
+            ->sort()
+            ->values();
+
+        if ($gejalaIds->isEmpty()) {
+            return '';
+        }
+
+        $userId = $hasil->kasus?->user_id ?? 'tanpa-user';
+
+        return $userId.'|'.$gejalaIds->implode(',');
     }
 }
