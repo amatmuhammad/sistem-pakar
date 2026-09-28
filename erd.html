@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD - Sistem Pakar CBR</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .export-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .export-btn:hover {
+            background: #2980b9;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+        .info h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .info ul {
+            margin-left: 20px;
+        }
+        .info li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Entity Relationship Diagram</h1>
+        <p class="subtitle">Sistem Pakar Diagnosa Penyakit Hama - CBR & CF</p>
+
+        <button class="export-btn" onclick="exportPNG()">Export sebagai PNG</button>
+
+        <div class="mermaid">
+erDiagram
+    USERS ||--o{ KASUS_CBR : "membuat"
+    USERS ||--o{ KASUS_CF : "membuat"
+    
+    KASUS_CBR ||--o{ FITUR_KASUS_CBR : "memiliki"
+    GEJALA ||--o{ FITUR_KASUS_CBR : "dimiliki"
+    
+    KASUS_CBR ||--o{ HASIL_DIAGNOSIS_CBR : "menghasilkan"
+    PENYAKIT_HAMA ||--o{ HASIL_DIAGNOSIS_CBR : "diagnosa"
+    
+    KASUS_CF ||--o{ GEJALA_KASUS_CF : "memiliki"
+    GEJALA ||--o{ GEJALA_KASUS_CF : "dimiliki"
+    
+    KASUS_CF ||--o{ HASIL_DIAGNOSIS_CF : "menghasilkan"
+    PENYAKIT_HAMA ||--o{ HASIL_DIAGNOSIS_CF : "diagnosa"
+    
+    PENYAKIT_HAMA ||--o{ ATURAN_CF : "memiliki"
+    GEJALA ||--o{ ATURAN_CF : "untuk"
+    
+    PENYAKIT_HAMA ||--o{ BASIS_PENYAKIT_GEJALA : "memiliki"
+    GEJALA ||--o{ BASIS_PENYAKIT_GEJALA : "sebagai"
+
+    USERS {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PENYAKIT_HAMA {
+        bigint id PK
+        string nama_penyakit
+        enum jenis
+        text deskripsi
+        text solusi
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    GEJALA {
+        bigint id PK
+        string kode_gejala UK
+        string nama_gejala
+        float bobot_cbr
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    KASUS_CBR {
+        bigint id PK
+        bigint user_id FK
+        dateTime tanggal
+        enum status_retain
+        text catatan_validasi
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    FITUR_KASUS_CBR {
+        bigint id PK
+        bigint kasus_cbr_id FK
+        bigint gejala_id FK
+        float nilai
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    HASIL_DIAGNOSIS_CBR {
+        bigint id PK
+        bigint kasus_cbr_id FK
+        bigint penyakit_hama_id FK
+        float similarity_final
+        text solusi_digunakan
+        boolean divalidasi_pakar
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    KASUS_CF {
+        bigint id PK
+        bigint user_id FK
+        dateTime tanggal
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    GEJALA_KASUS_CF {
+        bigint id PK
+        bigint kasus_cf_id FK
+        bigint gejala_id FK
+        float nilai_cf_user
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ATURAN_CF {
+        bigint id PK
+        bigint penyakit_id FK
+        bigint gejala_id FK
+        float mb
+        float md
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    HASIL_DIAGNOSIS_CF {
+        bigint id PK
+        bigint kasus_cf_id FK
+        bigint penyakit_hama_id FK
+        float cf_final
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    BASIS_PENYAKIT_GEJALA {
+        bigint id PK
+        bigint penyakit_hama_id FK
+        bigint gejala_id FK
+        float cf_pakar
+        timestamp created_at
+        timestamp updated_at
+    }
+        </div>
+
+        <div class="info">
+            <h3>Keterangan Relasi:</h3>
+            <ul>
+                <li><strong>users → kasus_cbr</strong> : Satu user dapat membuat banyak kasus CBR</li>
+                <li><strong>users → kasus_cf</strong> : Satu user dapat membuat banyak kasus CF</li>
+                <li><strong>kasus_cbr → fitur_kasus_cbr</strong> : Satu kasus CBR memiliki banyak fitur gejala</li>
+                <li><strong>gejala → fitur_kasus_cbr</strong> : Satu gejala dapat muncul di banyak kasus CBR</li>
+                <li><strong>kasus_cbr → hasil_diagnosis_cbr</strong> : Satu kasus CBR menghasilkan banyak diagnosis</li>
+                <li><strong>penyakit_hama → hasil_diagnosis_cbr</strong> : Satu penyakit dapat menjadi hasil diagnosis</li>
+                <li><strong>kasus_cf → gejala_kasus_cf</strong> : Satu kasus CF memiliki banyak gejala</li>
+                <li><strong>gejala → gejala_kasus_cf</strong> : Satu gejala dapat muncul di banyak kasus CF</li>
+                <li><strong>kasus_cf → hasil_diagnosis_cf</strong> : Satu kasus CF menghasilkan banyak diagnosis</li>
+                <li><strong>penyakit_hama → hasil_diagnosis_cf</strong> : Satu penyakit dapat menjadi hasil diagnosis</li>
+                <li><strong>penyakit_hama → aturan_cf</strong> : Satu penyakit memiliki banyak aturan CF</li>
+                <li><strong>gejala → aturan_cf</strong> : Satu gejala digunakan dalam banyak aturan CF</li>
+                <li><strong>penyakit_hama → basis_penyakit_gejala</strong> : Satu penyakit memiliki banyak basis gejala</li>
+                <li><strong>gejala → basis_penyakit_gejala</strong> : Satu gejala menjadi bagian dari banyak basis penyakit</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            er: {
+                diagramPadding: 20,
+                entityPadding: 15,
+                minEntityWidth: 100,
+                useMaxWidth: true
+            }
+        });
+
+        function exportPNG() {
+            const svg = document.querySelector('.mermaid svg');
+            if (!svg) {
+                alert('SVG belum siap, tunggu beberapa detik...');
+                return;
+            }
+
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            canvas.width = svg.width.baseVal.value * 2;
+            canvas.height = svg.height.baseVal.value * 2;
+
+            img.onload = function() {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const link = document.createElement('a');
+                link.download = 'erd-sistem-pakar-cbr.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+    </script>
+</body>
+</html>

@@ -84,11 +84,7 @@
                             <div class="text-truncate" data-i18n="Kasus">Basis Kasus</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ request()->routeIs('diagnosa-cbr.hasil') ? 'active' : ''}}">
-                        <a href="{{ route('diagnosa-cbr.hasil') }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Hasil">Hasil Diagnosa</div>
-                        </a>
-                    </li>
+
                 </ul>
             </li>
 

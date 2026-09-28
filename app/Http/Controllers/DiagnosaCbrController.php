@@ -129,27 +129,4 @@ class DiagnosaCbrController extends Controller
 
         return view('cbr.kasus', compact('kasus'));
     }
-
-    public function hasil(Request $request)
-    {
-        $perPage = $request->get('perPage', 10);
-        $search = $request->get('search');
-
-        $hasil = HasilDiagnosisCbr::with(['kasus.fitur.gejala', 'penyakit'])
-            ->when($search, function ($query) use ($search) {
-                $query->whereHas('penyakit', function ($qp) use ($search) {
-                    $qp->where('nama_penyakit', 'like', "%{$search}%");
-                })
-                ->orWhereHas('kasus', function ($qk) use ($search) {
-                    $qk->where('id', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate($perPage)
-            ->withQueryString();
-
-        return view('cbr.hasil', compact('hasil'));
-    }
-
-
 }

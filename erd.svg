@@ -1,0 +1,223 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" font-family="Segoe UI, Arial, sans-serif">
+    <defs>
+        <style>
+            .table-box { fill: #fff; stroke: #2c3e50; stroke-width: 2; rx: 8; }
+            .table-header { fill: #3498db; }
+            .table-header-text { fill: #fff; font-weight: bold; font-size: 14px; }
+            .field-text { fill: #2c3e50; font-size: 11px; }
+            .pk { fill: #e74c3c; font-weight: bold; }
+            .fk { fill: #f39c12; }
+            .relation-line { stroke: #7f8c8d; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+            .relation-label { fill: #7f8c8d; font-size: 10px; font-style: italic; }
+            .title { fill: #2c3e50; font-size: 20px; font-weight: bold; text-anchor: middle; }
+            .subtitle { fill: #7f8c8d; font-size: 12px; text-anchor: middle; }
+        </style>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#7f8c8d" />
+        </marker>
+    </defs>
+
+    <!-- Title -->
+    <text x="700" y="30" class="title">Entity Relationship Diagram</text>
+    <text x="700" y="50" class="subtitle">Sistem Pakar Diagnosa Penyakit Hama - CBR & CF</text>
+
+    <!-- USERS Table -->
+    <g id="users">
+        <rect x="50" y="80" width="180" height="140" class="table-box" />
+        <rect x="50" y="80" width="180" height="30" class="table-header" rx="8" />
+        <text x="140" y="100" class="table-header-text" text-anchor="middle">USERS</text>
+        <text x="60" y="125" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="60" y="145" class="field-text">name</text>
+        <text x="60" y="165" class="field-text">email</text>
+        <text x="60" y="185" class="field-text">password</text>
+        <text x="60" y="205" class="field-text">created_at</text>
+    </g>
+
+    <!-- PENYAKIT_HAMA Table -->
+    <g id="penyakit_hama">
+        <rect x="50" y="280" width="200" height="160" class="table-box" />
+        <rect x="50" y="280" width="200" height="30" class="table-header" rx="8" />
+        <text x="150" y="300" class="table-header-text" text-anchor="middle">PENYAKIT_HAMA</text>
+        <text x="60" y="325" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="60" y="345" class="field-text">nama_penyakit</text>
+        <text x="60" y="365" class="field-text">jenis</text>
+        <text x="60" y="385" class="field-text">deskripsi</text>
+        <text x="60" y="405" class="field-text">solusi</text>
+        <text x="60" y="425" class="field-text">created_at</text>
+    </g>
+
+    <!-- GEJALA Table -->
+    <g id="gejala">
+        <rect x="50" y="500" width="180" height="140" class="table-box" />
+        <rect x="50" y="500" width="180" height="30" class="table-header" rx="8" />
+        <text x="140" y="520" class="table-header-text" text-anchor="middle">GEJALA</text>
+        <text x="60" y="545" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="60" y="565" class="field-text">kode_gejala</text>
+        <text x="60" y="585" class="field-text">nama_gejala</text>
+        <text x="60" y="605" class="field-text">bobot_cbr</text>
+        <text x="60" y="625" class="field-text">created_at</text>
+    </g>
+
+    <!-- KASUS_CBR Table -->
+    <g id="kasus_cbr">
+        <rect x="350" y="80" width="200" height="160" class="table-box" />
+        <rect x="350" y="80" width="200" height="30" class="table-header" rx="8" />
+        <text x="450" y="100" class="table-header-text" text-anchor="middle">KASUS_CBR</text>
+        <text x="360" y="125" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="360" y="145" class="field-text"><tspan class="fk">FK</tspan>  user_id</text>
+        <text x="360" y="165" class="field-text">tanggal</text>
+        <text x="360" y="185" class="field-text">status_retain</text>
+        <text x="360" y="205" class="field-text">catatan_validasi</text>
+        <text x="360" y="225" class="field-text">created_at</text>
+    </g>
+
+    <!-- FITUR_KASUS_CBR Table -->
+    <g id="fitur_kasus_cbr">
+        <rect x="350" y="300" width="200" height="140" class="table-box" />
+        <rect x="350" y="300" width="200" height="30" class="table-header" rx="8" />
+        <text x="450" y="320" class="table-header-text" text-anchor="middle">FITUR_KASUS_CBR</text>
+        <text x="360" y="345" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="360" y="365" class="field-text"><tspan class="fk">FK</tspan>  kasus_cbr_id</text>
+        <text x="360" y="385" class="field-text"><tspan class="fk">FK</tspan>  gejala_id</text>
+        <text x="360" y="405" class="field-text">nilai</text>
+        <text x="360" y="425" class="field-text">created_at</text>
+    </g>
+
+    <!-- HASIL_DIAGNOSIS_CBR Table -->
+    <g id="hasil_diagnosis_cbr">
+        <rect x="350" y="500" width="220" height="160" class="table-box" />
+        <rect x="350" y="500" width="220" height="30" class="table-header" rx="8" />
+        <text x="460" y="520" class="table-header-text" text-anchor="middle">HASIL_DIAGNOSIS_CBR</text>
+        <text x="360" y="545" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="360" y="565" class="field-text"><tspan class="fk">FK</tspan>  kasus_cbr_id</text>
+        <text x="360" y="585" class="field-text"><tspan class="fk">FK</tspan>  penyakit_hama_id</text>
+        <text x="360" y="605" class="field-text">similarity_final</text>
+        <text x="360" y="625" class="field-text">solusi_digunakan</text>
+        <text x="360" y="645" class="field-text">divalidasi_pakar</text>
+    </g>
+
+    <!-- KASUS_CF Table -->
+    <g id="kasus_cf">
+        <rect x="700" y="80" width="180" height="120" class="table-box" />
+        <rect x="700" y="80" width="180" height="30" class="table-header" rx="8" />
+        <text x="790" y="100" class="table-header-text" text-anchor="middle">KASUS_CF</text>
+        <text x="710" y="125" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="710" y="145" class="field-text"><tspan class="fk">FK</tspan>  user_id</text>
+        <text x="710" y="165" class="field-text">tanggal</text>
+        <text x="710" y="185" class="field-text">created_at</text>
+    </g>
+
+    <!-- GEJALA_KASUS_CF Table -->
+    <g id="gejala_kasus_cf">
+        <rect x="700" y="260" width="200" height="140" class="table-box" />
+        <rect x="700" y="260" width="200" height="30" class="table-header" rx="8" />
+        <text x="800" y="280" class="table-header-text" text-anchor="middle">GEJALA_KASUS_CF</text>
+        <text x="710" y="305" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="710" y="325" class="field-text"><tspan class="fk">FK</tspan>  kasus_cf_id</text>
+        <text x="710" y="345" class="field-text"><tspan class="fk">FK</tspan>  gejala_id</text>
+        <text x="710" y="365" class="field-text">nilai_cf_user</text>
+        <text x="710" y="385" class="field-text">created_at</text>
+    </g>
+
+    <!-- HASIL_DIAGNOSIS_CF Table -->
+    <g id="hasil_diagnosis_cf">
+        <rect x="700" y="460" width="200" height="140" class="table-box" />
+        <rect x="700" y="460" width="200" height="30" class="table-header" rx="8" />
+        <text x="800" y="480" class="table-header-text" text-anchor="middle">HASIL_DIAGNOSIS_CF</text>
+        <text x="710" y="505" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="710" y="525" class="field-text"><tspan class="fk">FK</tspan>  kasus_cf_id</text>
+        <text x="710" y="545" class="field-text"><tspan class="fk">FK</tspan>  penyakit_hama_id</text>
+        <text x="710" y="565" class="field-text">cf_final</text>
+        <text x="710" y="585" class="field-text">created_at</text>
+    </g>
+
+    <!-- ATURAN_CF Table -->
+    <g id="aturan_cf">
+        <rect x="1050" y="260" width="180" height="140" class="table-box" />
+        <rect x="1050" y="260" width="180" height="30" class="table-header" rx="8" />
+        <text x="1140" y="280" class="table-header-text" text-anchor="middle">ATURAN_CF</text>
+        <text x="1060" y="305" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="1060" y="325" class="field-text"><tspan class="fk">FK</tspan>  penyakit_id</text>
+        <text x="1060" y="345" class="field-text"><tspan class="fk">FK</tspan>  gejala_id</text>
+        <text x="1060" y="365" class="field-text">mb</text>
+        <text x="1060" y="385" class="field-text">md</text>
+    </g>
+
+    <!-- BASIS_PENYAKIT_GEJALA Table -->
+    <g id="basis_penyakit_gejala">
+        <rect x="1050" y="460" width="220" height="140" class="table-box" />
+        <rect x="1050" y="460" width="220" height="30" class="table-header" rx="8" />
+        <text x="1160" y="480" class="table-header-text" text-anchor="middle">BASIS_PENYAKIT_GEJALA</text>
+        <text x="1060" y="505" class="field-text"><tspan class="pk">PK</tspan>  id</text>
+        <text x="1060" y="525" class="field-text"><tspan class="fk">FK</tspan>  penyakit_hama_id</text>
+        <text x="1060" y="545" class="field-text"><tspan class="fk">FK</tspan>  gejala_id</text>
+        <text x="1060" y="565" class="field-text">cf_pakar</text>
+        <text x="1060" y="585" class="field-text">created_at</text>
+    </g>
+
+    <!-- Relations -->
+    <!-- users -> kasus_cbr -->
+    <path d="M 230 150 L 350 150" class="relation-line" />
+    <text x="290" y="145" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- users -> kasus_cf -->
+    <path d="M 140 220 L 140 260 L 650 260 L 650 140 L 700 140" class="relation-line" />
+    <text x="400" y="255" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- kasus_cbr -> fitur_kasus_cbr -->
+    <path d="M 450 240 L 450 300" class="relation-line" />
+    <text x="460" y="275" class="relation-label">1:N</text>
+
+    <!-- gejala -> fitur_kasus_cbr -->
+    <path d="M 230 570 L 350 370" class="relation-line" />
+    <text x="280" y="480" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- kasus_cbr -> hasil_diagnosis_cbr -->
+    <path d="M 450 240 L 450 500" class="relation-line" />
+    <text x="460" y="370" class="relation-label">1:N</text>
+
+    <!-- penyakit_hama -> hasil_diagnosis_cbr -->
+    <path d="M 250 360 L 350 580" class="relation-line" />
+    <text x="290" y="480" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- kasus_cf -> gejala_kasus_cf -->
+    <path d="M 790 200 L 790 260" class="relation-line" />
+    <text x="800" y="235" class="relation-label">1:N</text>
+
+    <!-- gejala -> gejala_kasus_cf -->
+    <path d="M 140 640 L 140 700 L 650 700 L 650 330 L 700 330" class="relation-line" />
+    <text x="400" y="695" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- kasus_cf -> hasil_diagnosis_cf -->
+    <path d="M 790 200 L 790 460" class="relation-line" />
+    <text x="800" y="330" class="relation-label">1:N</text>
+
+    <!-- penyakit_hama -> hasil_diagnosis_cf -->
+    <path d="M 250 400 L 650 400 L 650 530 L 700 530" class="relation-line" />
+    <text x="450" y="395" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- penyakit_hama -> aturan_cf -->
+    <path d="M 250 340 L 1050 330" class="relation-line" />
+    <text x="650" y="325" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- gejala -> aturan_cf -->
+    <path d="M 140 640 L 140 750 L 1000 750 L 1000 350 L 1050 350" class="relation-line" />
+    <text x="570" y="745" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- penyakit_hama -> basis_penyakit_gejala -->
+    <path d="M 250 420 L 1050 530" class="relation-line" />
+    <text x="650" y="480" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- gejala -> basis_penyakit_gejala -->
+    <path d="M 140 640 L 140 800 L 1000 800 L 1000 550 L 1050 550" class="relation-line" />
+    <text x="570" y="795" class="relation-label" text-anchor="middle">1:N</text>
+
+    <!-- Legend -->
+    <g id="legend">
+        <rect x="50" y="700" width="300" height="120" fill="#f8f9fa" stroke="#dee2e6" rx="8" />
+        <text x="70" y="725" class="field-text" font-weight="bold">Keterangan:</text>
+        <text x="70" y="750" class="field-text"><tspan class="pk">PK</tspan> = Primary Key</text>
+        <text x="70" y="775" class="field-text"><tspan class="fk">FK</tspan> = Foreign Key</text>
+        <text x="70" y="800" class="field-text">1:N = One to Many</text>
+    </g>
+</svg>

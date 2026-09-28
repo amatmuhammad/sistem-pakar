@@ -12,7 +12,7 @@
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
             <h5 class="mb-0">Daftar Gejala</h5>
-            <h3>{{ $totalbobot }}</h3>
+            <!-- <h3>{{ $totalbobot }}</h3> -->
         </div>
         <div class="table-responsive text-nowrap p-4">
             <table class="table table-hover align-middle">

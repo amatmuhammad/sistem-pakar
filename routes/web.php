@@ -73,7 +73,7 @@ Route::middleware('auth')->group(function () {
 
     /* RIWAYAT & DETAIL KASUS CBR */
     Route::get('/diagnosa-cbr/kasus', [DiagnosaCbrController::class, 'kasus'])->name('diagnosa-cbr.kasus');
-    Route::get('/diagnosa-cbr/hasil', [DiagnosaCbrController::class, 'hasil'])->name('diagnosa-cbr.hasil');
+
 
 
     /* HASIL DIAGNOSA CF */
