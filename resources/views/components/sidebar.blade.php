@@ -119,12 +119,7 @@
                     <div class="text-truncate" data-i18n="Basic">Perbandingan</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->is('statistik*') ? 'active open' : '' }}">
-                <a href="{{ route('statistik') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-analyse"></i>
-                    <div class="text-truncate" data-i18n="Basic">Statistik</div>
-                </a>
-            </li>
+
         </ul>
 
     @else
