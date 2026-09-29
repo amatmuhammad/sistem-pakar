@@ -55,7 +55,7 @@ class DiagnosaCbrController extends Controller
             return redirect()
                 ->route('diagnosa-cbr.form')
                 ->with('error', 'Tidak ada penyakit yang cocok dengan gejala yang dipilih. Silakan pilih gejala lain atau tambahkan gejala.');
-        }
+        } //batas potongan awal
 
         $hasil->load(['kasus.fitur.gejala', 'penyakit']);
 
@@ -74,6 +74,13 @@ class DiagnosaCbrController extends Controller
             ]);
         }
     }
+
+    //jika ingin hitungan sampai mencapai 100%
+    //       // $bobotCocok = Gejala::whereIn('id', $gejalaBaru)
+            //     ->whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
+
+            // $totalBobotInput = Gejala::whereIn('id', $gejalaBaru)->sum('bobot_cbr');
+            // $similarity = $totalBobotInput > 0 ? $bobotCocok / $totalBobotInput : 0;
 
     private function hitungCbr($kasus)
     {
@@ -108,6 +115,8 @@ class DiagnosaCbrController extends Controller
             'similarity_final' => $similarityTertinggi,
         ]);
     }
+
+
     
     public function kasus(Request $request)
     {

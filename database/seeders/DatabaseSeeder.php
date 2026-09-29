@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KasusCbrSeeder::class,
             BasisPenyakitGejalaSeeder::class,
-            BasisPenyakitGejalaCfSeeder::class,
+            // BasisPenyakitGejalaCfSeeder::class,
         ]);
     }
 }

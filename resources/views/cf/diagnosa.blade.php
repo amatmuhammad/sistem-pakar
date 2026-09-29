@@ -11,7 +11,7 @@
     
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title mb-0">Riwayat Diagnosa</h5> <!-- Sesuaikan judul card jika ada -->
+            <h5 class="card-title mb-0">Diagnosa penyakit dan hama tanaman jagung menggunakan metode CF</h5> <!-- Sesuaikan judul card jika ada -->
             
             <div class="d-flex align-items-center gap-2 ms-auto">
                 <!-- Tombol Mulai Diagnosa -->
@@ -67,9 +67,12 @@
                 </div>
             @else
                 <div class="text-center py-5">
-                    <i class="bx bx-clipboard text-light mb-3" style="font-size: 80px;"></i>
-                    <h5 class="text-muted">Belum ada hasil diagnosa.</h5>
-                    <small class="text-muted">Klik "Mulai Diagnosa" untuk memulai analisis gejala.</small>
+                    <img src="{{ asset('assets/img/backgrounds/search.png') }}" 
+                        alt="no-data" 
+                        width="500"
+                        class="mb-3" style="border-radius: 20px;">
+                    <h5 class="text-muted">Siap untuk mendiagnosa?</h5>
+                    <p class="text-muted">Klik tombol "Mulai Diagnosa" untuk memasukkan gejala tanaman jagung Anda.</p>
                 </div>
             @endif
         </div>

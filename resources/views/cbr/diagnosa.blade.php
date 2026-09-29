@@ -8,7 +8,7 @@
     <div class="card">
        <div class="card-header d-flex justify-content-between align-items-center">
 
-            <h5 class="mb-0">Diagnosis Hama & Penyakit Jagung</h5>
+            <h5 class="mb-0">Diagnosis Hama & Penyakit Jagung Metode CBR</h5>
 
             <div class="d-flex gap-2">
 
