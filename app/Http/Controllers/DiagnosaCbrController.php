@@ -17,7 +17,7 @@ class DiagnosaCbrController extends Controller
 {
     public function form()
     {
-        $gejala = Gejala::all();
+        $gejala = Gejala::orderBy('kode_gejala')->get();
         // Riwayat diagnosis terakhir (opsional)
         $diagnosa = HasilDiagnosisCbr::with('penyakit')->latest()->limit(10)->get();
 

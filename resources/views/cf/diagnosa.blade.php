@@ -8,17 +8,17 @@
             <small class="text-muted">Pilih gejala dan tingkat keyakinan untuk menganalisis hama & penyakit</small>
         </div>
     </div>
-    
+
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="card-title mb-0">Diagnosa penyakit dan hama tanaman jagung menggunakan metode CF</h5> <!-- Sesuaikan judul card jika ada -->
-            
+
             <div class="d-flex align-items-center gap-2 ms-auto">
                 <!-- Tombol Mulai Diagnosa -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDiagnosa">
                     <i class="bx bx-plus me-1"></i> Mulai Diagnosa
                 </button>
-                
+
                 <!-- Tombol Bersihkan Riwayat -->
                 <form action="{{ route('diagnosa-cf.clear-session') }}" method="POST" class="d-inline">
                     @csrf
@@ -67,8 +67,8 @@
                 </div>
             @else
                 <div class="text-center py-5">
-                    <img src="{{ asset('assets/img/backgrounds/search.png') }}" 
-                        alt="no-data" 
+                    <img src="{{ asset('assets/img/backgrounds/search.png') }}"
+                        alt="no-data"
                         width="500"
                         class="mb-3" style="border-radius: 20px;">
                     <h5 class="text-muted">Siap untuk mendiagnosa?</h5>
@@ -81,15 +81,35 @@
 
 <div class="modal fade" id="modalDiagnosa" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <form action="{{ route('diagnosa-cf.proses') }}" method="POST" class="modal-content" id="formDiagnosa">
+        <form action="{{ route('diagnosa-cf.proses') }}" method="POST" class="modal-content border-0 shadow-lg" id="formDiagnosa" style="border-radius: 1rem;">
             @csrf
-            <div class="modal-header">
-                <h5 class="modal-title">Pilih Gejala & Tingkat Keyakinan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header border-0 px-4 py-4" style="background: linear-gradient(135deg, #40e300 0%, #FBEC5D 100%); border-radius: 1rem 1rem 0 0;">
+                <h5 class="modal-title fw-bold text-white mb-0">
+                    <i class="bi bi-stethoscope me-2" style="font-size: 1.3rem;"></i>Pilih Gejala & Tingkat Keyakinan
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-0">
+                <div class="p-3 border-bottom">
+                    <div class="input-group" style="background: #f8f9fa; border-radius: 2rem; overflow: hidden; border: 2px solid #e9ecef;">
+                        <span class="input bg-transparent border-0 ps-4 d-flex align-items-center">
+                            <i class="bi bi-search text-primary fw-bold" style="font-size: 1.1rem;"></i>
+                        </span>
+                        <input type="text" id="searchGejalaCf"
+                               class="form-control border-0 bg-transparent ps-2"
+                               placeholder="Cari gejala berdasarkan kode atau nama..."
+                               autocomplete="off"
+                               style="box-shadow: none !important; font-size: 0.95rem;">
+                        <button type="button" id="clearSearchCf"
+                                class="btn border-0 text-danger fw-bold d-none pe-3"
+                                aria-label="Hapus pencarian"
+                                style="background: transparent;">
+                            <i class="bi bi-x-circle-fill" style="font-size: 1.1rem;"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabelGejalaCf">
                         <thead class="table-light">
                             <tr>
                                 <th width="60" class="text-center">Pilih</th>
@@ -118,11 +138,14 @@
                                 </td>
                             </tr>
                             @endforeach
+                            <tr id="emptySearchCf" class="d-none">
+                                <td colspan="4" class="text-center text-muted py-4">Tidak ada gejala yang cocok</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer pt-5">
                 <small class="text-muted me-auto" id="selectedCount">0 gejala dipilih</small>
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Proses Diagnosa</button>
@@ -156,6 +179,42 @@
             updateCount();
         });
     });
+
+    const searchInput = document.getElementById('searchGejalaCf');
+    const tableRows = document.querySelectorAll('#tabelGejalaCf tbody tr:not(#emptySearchCf)');
+    const emptyRow = document.getElementById('emptySearchCf');
+
+    const clearBtnCf = document.getElementById('clearSearchCf');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const keyword = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            tableRows.forEach(function (row) {
+                const text = row.textContent.toLowerCase();
+                const match = text.includes(keyword);
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            if (emptyRow) {
+                emptyRow.classList.toggle('d-none', !(keyword.length > 0 && visibleCount === 0));
+            }
+
+            if (clearBtnCf) {
+                clearBtnCf.classList.toggle('d-none', keyword.length === 0);
+            }
+        });
+    }
+
+    if (clearBtnCf) {
+        clearBtnCf.addEventListener('click', function () {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+        });
+    }
 
     const form = document.getElementById('formDiagnosa');
     if (form) {

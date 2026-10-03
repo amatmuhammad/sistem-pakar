@@ -198,7 +198,8 @@
                        id="gejala-{{ $g->id }}"
                        value="{{ $g->id }}"
                        style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
-                <span class="fw-medium text-dark" style="font-size: 0.95rem;">{{ $g->nama_gejala }}</span>
+                <span class="badge bg-label-primary me-2 flex-shrink-0" style="font-size: 0.75rem;">{{ $g->kode_gejala }}</span>
+                <span class="fw-medium text-dark gejala-nama" style="font-size: 0.95rem;">{{ $g->nama_gejala }}</span>
                 <i class="bi bi-check-circle-fill text-success ms-auto opacity-0" style="font-size: 1.1rem; transition: opacity 0.2s ease;"></i>
               </label>
             </div>
@@ -500,7 +501,7 @@
       let totalCount = 0;
 
       items.forEach(item => {
-        const label = item.querySelector('span').textContent.toLowerCase();
+        const label = item.textContent.toLowerCase();
         const isMatch = label.includes(keyword);
         item.style.display = isMatch ? '' : 'none';
         
