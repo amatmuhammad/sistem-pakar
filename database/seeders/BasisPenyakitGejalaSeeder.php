@@ -18,63 +18,84 @@ class BasisPenyakitGejalaSeeder extends Seeder
 
         // 3. DAFTARKAN RELASI BARU BESERTA NILAI CF PAKAR
         $data = [
-            // 1. Hama Uret (G01, G02, G03)
-            ['penyakit_hama_id' => $penyakit['Hama Uret'] ?? null, 'gejala_id' => $gejala['G01'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Hama Uret'] ?? null, 'gejala_id' => $gejala['G02'] ?? null, 'cf_pakar' => 0.6],
-            ['penyakit_hama_id' => $penyakit['Hama Uret'] ?? null, 'gejala_id' => $gejala['G03'] ?? null, 'cf_pakar' => 0.9],
+            // ================= KATEGORI PENYAKIT =================
 
-            // 2. Ulat Tanah (G01, G02, G04, G05)
-            ['penyakit_hama_id' => $penyakit['Ulat Tanah'] ?? null, 'gejala_id' => $gejala['G01'] ?? null, 'cf_pakar' => 0.7],
-            ['penyakit_hama_id' => $penyakit['Ulat Tanah'] ?? null, 'gejala_id' => $gejala['G02'] ?? null, 'cf_pakar' => 0.6],
-            ['penyakit_hama_id' => $penyakit['Ulat Tanah'] ?? null, 'gejala_id' => $gejala['G04'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Ulat Tanah'] ?? null, 'gejala_id' => $gejala['G05'] ?? null, 'cf_pakar' => 0.8],
+            // 1. Penyakit Bulai (P01) - Gejala: G01, G02, G03
+            ['penyakit_hama_id' => $penyakit['Bulai'] ?? null, 'gejala_id' => $gejala['G01'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Bulai'] ?? null, 'gejala_id' => $gejala['G02'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Bulai'] ?? null, 'gejala_id' => $gejala['G03'] ?? null, 'cf_pakar' => 0.85],
 
-            // 3. Lalat Bibit (G06, G07, G08)
-            ['penyakit_hama_id' => $penyakit['Lalat Bibit'] ?? null, 'gejala_id' => $gejala['G06'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Lalat Bibit'] ?? null, 'gejala_id' => $gejala['G07'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Lalat Bibit'] ?? null, 'gejala_id' => $gejala['G08'] ?? null, 'cf_pakar' => 0.7],
+            // 2. Hawar Daun (P02) - Gejala: G04, G05, G06
+            ['penyakit_hama_id' => $penyakit['Hawar Daun'] ?? null, 'gejala_id' => $gejala['G04'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Hawar Daun'] ?? null, 'gejala_id' => $gejala['G05'] ?? null, 'cf_pakar' => 0.75],
+            ['penyakit_hama_id' => $penyakit['Hawar Daun'] ?? null, 'gejala_id' => $gejala['G06'] ?? null, 'cf_pakar' => 0.80],
 
-            // 4. Ulat Grayak (G09, G10, G11, G12)
-            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['G09'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['G10'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['G11'] ?? null, 'cf_pakar' => 0.85],
-            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['G12'] ?? null, 'cf_pakar' => 0.75],
+            // 3. Karat Daun (P03) - Gejala: G07, G08, G09
+            ['penyakit_hama_id' => $penyakit['Karat Daun'] ?? null, 'gejala_id' => $gejala['G07'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Karat Daun'] ?? null, 'gejala_id' => $gejala['G08'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Karat Daun'] ?? null, 'gejala_id' => $gejala['G09'] ?? null, 'cf_pakar' => 0.85],
 
-            // 5. Penggerek Batang (G13, G14)
-            ['penyakit_hama_id' => $penyakit['Penggerek Batang'] ?? null, 'gejala_id' => $gejala['G13'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Penggerek Batang'] ?? null, 'gejala_id' => $gejala['G14'] ?? null, 'cf_pakar' => 0.85],
+            // 4. Busuk Batang (P04) - Gejala: G10, G11, G12
+            ['penyakit_hama_id' => $penyakit['Busuk Batang'] ?? null, 'gejala_id' => $gejala['G10'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Busuk Batang'] ?? null, 'gejala_id' => $gejala['G11'] ?? null, 'cf_pakar' => 0.75],
+            ['penyakit_hama_id' => $penyakit['Busuk Batang'] ?? null, 'gejala_id' => $gejala['G12'] ?? null, 'cf_pakar' => 0.90],
 
-            // 6. Penggerek Tongkol (G15, G16, G17)
-            ['penyakit_hama_id' => $penyakit['Penggerek Tongkol'] ?? null, 'gejala_id' => $gejala['G15'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Penggerek Tongkol'] ?? null, 'gejala_id' => $gejala['G16'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Penggerek Tongkol'] ?? null, 'gejala_id' => $gejala['G17'] ?? null, 'cf_pakar' => 0.85],
+            // 5. Busuk Tongkol (P05) - Gejala: G13, G14, G15
+            ['penyakit_hama_id' => $penyakit['Busuk Tongkol'] ?? null, 'gejala_id' => $gejala['G13'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Busuk Tongkol'] ?? null, 'gejala_id' => $gejala['G14'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Busuk Tongkol'] ?? null, 'gejala_id' => $gejala['G15'] ?? null, 'cf_pakar' => 0.75],
 
-            // 7. Penyakit Bulai (G18, G19, G08)
-            ['penyakit_hama_id' => $penyakit['Penyakit Bulai'] ?? null, 'gejala_id' => $gejala['G18'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Penyakit Bulai'] ?? null, 'gejala_id' => $gejala['G19'] ?? null, 'cf_pakar' => 0.85],
-            ['penyakit_hama_id' => $penyakit['Penyakit Bulai'] ?? null, 'gejala_id' => $gejala['G08'] ?? null, 'cf_pakar' => 0.6],
+            // 6. Bercak Daun (P06) - Gejala: G16, G17, G18
+            ['penyakit_hama_id' => $penyakit['Bercak Daun'] ?? null, 'gejala_id' => $gejala['G16'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Bercak Daun'] ?? null, 'gejala_id' => $gejala['G17'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Bercak Daun'] ?? null, 'gejala_id' => $gejala['G18'] ?? null, 'cf_pakar' => 0.80],
 
-            // 8. Hawar Daun (G20, G21, G22)
-            ['penyakit_hama_id' => $penyakit['Hawar Daun'] ?? null, 'gejala_id' => $gejala['G20'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Hawar Daun'] ?? null, 'gejala_id' => $gejala['G21'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Hawar Daun'] ?? null, 'gejala_id' => $gejala['G22'] ?? null, 'cf_pakar' => 0.75],
+            // 7. Layu Fusarium (P07) - Gejala: G19, G20, G21
+            ['penyakit_hama_id' => $penyakit['Layu Fusarium'] ?? null, 'gejala_id' => $gejala['G19'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Layu Fusarium'] ?? null, 'gejala_id' => $gejala['G20'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Layu Fusarium'] ?? null, 'gejala_id' => $gejala['G21'] ?? null, 'cf_pakar' => 0.75],
 
-            // 9. Karat Daun (G23, G24, G25)
-            ['penyakit_hama_id' => $penyakit['Karat Daun'] ?? null, 'gejala_id' => $gejala['G23'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Karat Daun'] ?? null, 'gejala_id' => $gejala['G24'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Karat Daun'] ?? null, 'gejala_id' => $gejala['G25'] ?? null, 'cf_pakar' => 0.85],
+            // 8. Virus Mosaik Jagung (P08) - Gejala: G22, G23, G24
+            ['penyakit_hama_id' => $penyakit['Virus Mosaik Jagung'] ?? null, 'gejala_id' => $gejala['G22'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Virus Mosaik Jagung'] ?? null, 'gejala_id' => $gejala['G23'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Virus Mosaik Jagung'] ?? null, 'gejala_id' => $gejala['G24'] ?? null, 'cf_pakar' => 0.80],
 
-            // 10. Penyakit Gosong (G26, G27)
-            ['penyakit_hama_id' => $penyakit['Penyakit Gosong'] ?? null, 'gejala_id' => $gejala['G26'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Penyakit Gosong'] ?? null, 'gejala_id' => $gejala['G27'] ?? null, 'cf_pakar' => 0.95],
+            // 9. Busuk Akar (P09) - Gejala: G25, G26, G27
+            ['penyakit_hama_id' => $penyakit['Busuk Akar'] ?? null, 'gejala_id' => $gejala['G25'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Busuk Akar'] ?? null, 'gejala_id' => $gejala['G26'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Busuk Akar'] ?? null, 'gejala_id' => $gejala['G27'] ?? null, 'cf_pakar' => 0.75],
 
-            // 11. Virus Mosaik Kerdil Jagung (G28, G29, G30, G31, G32, G33)
-            ['penyakit_hama_id' => $penyakit['Virus Mosaik Kerdil Jagung'] ?? null, 'gejala_id' => $gejala['G28'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Virus Mosaik Kerdil Jagung'] ?? null, 'gejala_id' => $gejala['G29'] ?? null, 'cf_pakar' => 0.9],
-            ['penyakit_hama_id' => $penyakit['Virus Mosaik Kerdil Jagung'] ?? null, 'gejala_id' => $gejala['G30'] ?? null, 'cf_pakar' => 0.75],
-            ['penyakit_hama_id' => $penyakit['Virus Mosaik Kerdil Jagung'] ?? null, 'gejala_id' => $gejala['G31'] ?? null, 'cf_pakar' => 0.85],
-            ['penyakit_hama_id' => $penyakit['Virus Mosaik Kerdil Jagung'] ?? null, 'gejala_id' => $gejala['G32'] ?? null, 'cf_pakar' => 0.8],
-            ['penyakit_hama_id' => $penyakit['Virus Mosaik Kerdil Jagung'] ?? null, 'gejala_id' => $gejala['G33'] ?? null, 'cf_pakar' => 0.9],
+            // 10. Antraknose (P10) - Gejala: G28, G29, G30
+            ['penyakit_hama_id' => $penyakit['Antraknose'] ?? null, 'gejala_id' => $gejala['G28'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Antraknose'] ?? null, 'gejala_id' => $gejala['G29'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Antraknose'] ?? null, 'gejala_id' => $gejala['G30'] ?? null, 'cf_pakar' => 0.80],
+
+            // ================= KATEGORI HAMA =================
+
+            // 11. Ulat Grayak (H01) - Gejala: GH01, GH02, GH03
+            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['GH01'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['GH02'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Ulat Grayak'] ?? null, 'gejala_id' => $gejala['GH03'] ?? null, 'cf_pakar' => 0.80],
+
+            // 12. Penggerek Batang (H02) - Gejala: GH04, GH05, GH06
+            ['penyakit_hama_id' => $penyakit['Penggerek Batang'] ?? null, 'gejala_id' => $gejala['GH04'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Penggerek Batang'] ?? null, 'gejala_id' => $gejala['GH05'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Penggerek Batang'] ?? null, 'gejala_id' => $gejala['GH06'] ?? null, 'cf_pakar' => 0.75],
+
+            // 13. Kutu Daun (H03) - Gejala: GH07, GH08, GH09
+            ['penyakit_hama_id' => $penyakit['Kutu Daun'] ?? null, 'gejala_id' => $gejala['GH07'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Kutu Daun'] ?? null, 'gejala_id' => $gejala['GH08'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Kutu Daun'] ?? null, 'gejala_id' => $gejala['GH09'] ?? null, 'cf_pakar' => 0.90],
+
+            // 14. Belalang (H04) - Gejala: GH10, GH11, GH12
+            ['penyakit_hama_id' => $penyakit['Belalang'] ?? null, 'gejala_id' => $gejala['GH10'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Belalang'] ?? null, 'gejala_id' => $gejala['GH11'] ?? null, 'cf_pakar' => 0.80],
+            ['penyakit_hama_id' => $penyakit['Belalang'] ?? null, 'gejala_id' => $gejala['GH12'] ?? null, 'cf_pakar' => 0.75],
+
+            // 15. Tikus Sawah (H05) - Gejala: GH13, GH14, GH15
+            ['penyakit_hama_id' => $penyakit['Tikus Sawah'] ?? null, 'gejala_id' => $gejala['GH13'] ?? null, 'cf_pakar' => 0.90],
+            ['penyakit_hama_id' => $penyakit['Tikus Sawah'] ?? null, 'gejala_id' => $gejala['GH14'] ?? null, 'cf_pakar' => 0.85],
+            ['penyakit_hama_id' => $penyakit['Tikus Sawah'] ?? null, 'gejala_id' => $gejala['GH15'] ?? null, 'cf_pakar' => 0.80],
         ];
 
         // 4. MASUKKAN DATA KE DATABASE

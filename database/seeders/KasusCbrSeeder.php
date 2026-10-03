@@ -51,7 +51,7 @@ class KasusCbrSeeder extends Seeder
         }
         HasilDiagnosisCbr::create([
             'kasus_cbr_id' => $kasus->id,
-            'penyakit_hama_id' => $p['Penyakit Bulai'],
+            'penyakit_hama_id' => $p['Bulai'],
             'similarity_final' => 2/2,
         ]);
     }

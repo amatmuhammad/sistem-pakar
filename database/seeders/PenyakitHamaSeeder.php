@@ -10,86 +10,98 @@ class PenyakitHamaSeeder extends Seeder
     public function run()
     {
         $penyakit = [
-            // Hama
-            [
-                'nama_penyakit' => 'Hama Uret',
-                'jenis' => 'hama',
-                'deskripsi' => 'Serangan hama uret yang menyerang akar dan bagian bawah tanaman.',
-                'solusi' => 'Lakukan pengolahan tanah yang baik dan gunakan insektisida tanah jika diperlukan.',
-            ],
-            [
-                'nama_penyakit' => 'Ulat Tanah',
-                'jenis' => 'hama',
-                'deskripsi' => 'Larva menyerang pangkal batang tanaman muda pada malam hari.',
-                'solusi' => 'Sanitasi lahan, pembersihan gulma, dan penggunaan insektisida pengendali ulat tanah.',
-            ],
-            [
-                'nama_penyakit' => 'Lalat Bibit',
-                'jenis' => 'hama',
-                'deskripsi' => 'Hama yang menyerang fase awal pertumbuhan tanaman jagung (daun muda).',
-                'solusi' => 'Perlakuan benih (*seed treatment*) menggunakan insektisida berbahan aktif fipronil atau imidakloprid.',
-            ],
+            // ================= KATEGORI HAMA (H01 - H05) =================
             [
                 'nama_penyakit' => 'Ulat Grayak',
                 'jenis' => 'hama',
-                'deskripsi' => 'Serangan Spodoptera frugiperda, larva memakan daun hingga transparan dan merusak titik tumbuh.',
-                'solusi' => 'Insektisida emamektin benzoat, sanitasi lahan, dan pemanfaatan musuh alami.',
+                'deskripsi' => 'Serangan Spodoptera frugiperda, larva memakan daun hingga transparan dan merusak titik tumbuh tanaman jagung.',
+                'solusi' => 'Gunakan insektisida sesuai dosis, lakukan pengendalian hama terpadu, dan bersihkan area sekitar tanaman.',
             ],
             [
                 'nama_penyakit' => 'Penggerek Batang',
                 'jenis' => 'hama',
-                'deskripsi' => 'Larva Ostrinia furnacalis mengebor batang dan membuat lubang gorokan.',
-                'solusi' => 'Insektisida sistemik, potong bagian tanaman terserang, dan pergiliran tanaman.',
+                'deskripsi' => 'Larva Ostrinia furnacalis mengebor batang dan membuat lubang gorokan yang menyebabkan tanaman mudah patah.',
+                'solusi' => 'Gunakan varietas tahan hama, semprot insektisida secara rutin, dan lakukan sanitasi lahan sekitar.',
             ],
             [
-                'nama_penyakit' => 'Penggerek Tongkol',
+                'nama_penyakit' => 'Kutu Daun',
                 'jenis' => 'hama',
-                'deskripsi' => 'Hama yang menyerang bagian pangkal hingga dalam tongkol jagung.',
-                'solusi' => 'Penyemprotan insektisida selektif dan panen tepat waktu.',
+                'deskripsi' => 'Hama yang menyebabkan daun menggulung, permukaan daun lengket, dan tanaman tampak layu.',
+                'solusi' => 'Gunakan pestisida tertentu, kendalikan semut di sekitar, dan semprot insektisida sesuai kebutuhan.',
+            ],
+            [
+                'nama_penyakit' => 'Belalang',
+                'jenis' => 'hama',
+                'deskripsi' => 'Hama yang memakan habis daun jagung dan meninggalkan bekas gigitan pada daun.',
+                'solusi' => 'Gunakan perangkap umpan, lakukan pengendalian manual, dan bersihkan gulma sekitar lahan.',
+            ],
+            [
+                'nama_penyakit' => 'Tikus Sawah',
+                'jenis' => 'hama',
+                'deskripsi' => 'Hama yang memotong batang tanaman, merusak atau menghilangkan jagung, dan meninggalkan jejak gigitan.',
+                'solusi' => 'Gunakan perangkap tikus, lakukan gropyokan tikus, dan jaga kebersihan lahan.',
             ],
 
-            // Penyakit
+            // ================= KATEGORI PENYAKIT (P01 - P10) =================
             [
-                'nama_penyakit' => 'Penyakit Bulai',
+                'nama_penyakit' => 'Bulai',
                 'jenis' => 'penyakit',
-                'deskripsi' => 'Disebabkan oleh Peronosclerospora maydis, ditandai garis kuning sejajar tulang daun.',
-                'solusi' => 'Fungisida berbahan aktif metalaksil, gunakan varietas tahan, dan atur jarak tanam.',
+                'deskripsi' => 'Disebabkan oleh Peronosclerospora maydis, ditandai daun berwarna putih kehijauan, pertumbuhan terhambat, dan daun menjadi kaku tegak.',
+                'solusi' => 'Gunakan benih tahan penyakit, cabut tanaman yang terinfeksi, dan lakukan sanitasi lahan.',
             ],
             [
                 'nama_penyakit' => 'Hawar Daun',
                 'jenis' => 'penyakit',
-                'deskripsi' => 'Disebabkan oleh jamur yang menimbulkan bercak coklat keabuan seperti jerami.',
-                'solusi' => 'Fungisida mancozeb, sanitasi sisa tanaman, dan penanaman varietas tahan.',
+                'deskripsi' => 'Ditandai bercak coklat memanjang pada daun, ujung daun mengering, dan daun terlihat terbakar.',
+                'solusi' => 'Semprot fungisida secara berkala, jaga kelembapan lahan, dan lakukan rotasi tanaman.',
             ],
             [
                 'nama_penyakit' => 'Karat Daun',
                 'jenis' => 'penyakit',
-                'deskripsi' => 'Disebabkan oleh Puccinia sorghi, memunculkan bintik kecil kecoklatan pada daun.',
-                'solusi' => 'Fungisida propikonazol, varietas tahan, serta menjaga drainase lahan.',
-            ],
-            [
-                'nama_penyakit' => 'Penyakit Gosong',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Menyebabkan pembengkakan (gall) pada bagian tongkol jagung.',
-                'solusi' => 'Memusnahkan bagian tanaman yang terserang dan rotasi tanaman.',
-            ],
-            [
-                'nama_penyakit' => 'Virus Mosaik Kerdil Jagung',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Infeksi virus yang menyebabkan daun sempit/kaku, batang terpelintir, dan gangguan pertumbuhan.',
-                'solusi' => 'Pengendalian vektor kutu daun (vektor virus) dan penggunaan benih sehat yang tahan virus.',
-            ],
-            [
-                'nama_penyakit' => 'Busuk Tongkol',
-                'jenis' => 'penyakit',
-                'deskripsi' => 'Penyakit yang menyebabkan busuk pada tongkol jagung.',
-                'solusi' => 'Penggunaan varietas tahan, sanitasi lahan, dan penggunaan fungisida.',
+                'deskripsi' => 'Disebabkan oleh Puccinia sorghi, memunculkan bercak coklat kekuningan, permukaan daun kasar, dan daun cepat mengering.',
+                'solusi' => 'Gunakan varietas tahan penyakit, lakukan penyemprotan fungisida, dan bersihkan gulma sekitar tanaman.',
             ],
             [
                 'nama_penyakit' => 'Busuk Batang',
                 'jenis' => 'penyakit',
-                'deskripsi' => 'Penyakit yang menyebabkan busuk pada batang jagung.',
-                'solusi' => 'Penggunaan varietas tahan, sanitasi lahan, dan penggunaan fungisida.',
+                'deskripsi' => 'Ditandai batang lunak dan busuk, tanaman mudah roboh, serta batang berubah warna kecoklatan.',
+                'solusi' => 'Perbaiki drainase tanah, kurangi kepadatan tanaman, dan gunakan benih sehat.',
+            ],
+            [
+                'nama_penyakit' => 'Busuk Tongkol',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Ditandai tongkol berjamur, hijau ovul menyebar, dan tongkol berubah warna.',
+                'solusi' => 'Panen tepat waktu, simpan hasil panen di tempat kering, dan gunakan fungisida jika diperlukan.',
+            ],
+            [
+                'nama_penyakit' => 'Bercak Daun',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Ditandai bercak oval pada daun, daun menguning, dan pertumbuhan daun terganggu.',
+                'solusi' => 'Lakukan sanitasi lahan, gunakan fungisida, dan bersihkan sisa tanaman sakit.',
+            ],
+            [
+                'nama_penyakit' => 'Layu Fusarium',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Ditandai tanaman layu, akar membusuk, dan pertumbuhan tanaman terhambat.',
+                'solusi' => 'Gunakan fungisida sistemik, lakukan rotasi tanaman, dan gunakan bibit tahan penyakit.',
+            ],
+            [
+                'nama_penyakit' => 'Virus Mosaik Jagung',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Ditandai daun belang hijau muda-tua, bentuk daun tidak normal, dan pertumbuhan tanaman lambat.',
+                'solusi' => 'Kendalikan hama vektor, cabut tanaman terinfeksi, dan gunakan benih sehat.',
+            ],
+            [
+                'nama_penyakit' => 'Busuk Akar',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Ditandai akar berwarna coklat kehitaman, tanaman mudah layu, dan pertumbuhan akar terganggu.',
+                'solusi' => 'Perbaiki drainase tanah, hindari penanaman berlebih, dan gunakan fungisida.',
+            ],
+            [
+                'nama_penyakit' => 'Antraknose',
+                'jenis' => 'penyakit',
+                'deskripsi' => 'Ditandai bercak hitam pada daun, batang mengering, dan tanaman mati pucuk/pelepah.',
+                'solusi' => 'Gunakan fungisida, lakukan rotasi tanaman, dan gunakan varietas tahan penyakit.',
             ],
         ];
 
