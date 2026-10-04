@@ -129,11 +129,11 @@
                                 <td>
                                     <select name="cf[{{ $g->id }}]" id="cf_{{ $g->id }}" class="form-select form-select-sm select-cf" disabled>
                                         <option value="" selected disabled>Pilih Nilai</option>
-                                        <option value="1.0">Pasti (1.0)</option>
-                                        <option value="0.8">Hampir Pasti (0.8)</option>
-                                        <option value="0.6">Kemungkinan Besar (0.6)</option>
-                                        <option value="0.4">Mungkin (0.4)</option>
-                                        <option value="0.2">Sedikit Yakin (0.2)</option>
+                                        <option value="1.0">Sangat Yakin (1.0)</option>
+                                        <option value="0.8">Yakin (0.8)</option>
+                                        <option value="0.6">Cukup Yakin (0.6)</option>
+                                        <option value="0.4">Kurang Yakin (0.4)</option>
+                                        <option value="0.2">Tidak Yakin (0.2)</option>
                                     </select>
                                 </td>
                             </tr>
