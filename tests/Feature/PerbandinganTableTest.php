@@ -85,7 +85,11 @@ class PerbandinganTableTest extends TestCase
             ->assertSee('80.00%')
             ->assertSee('#'.$hasilCbrPertama->id)
             ->assertSee('#'.$hasilCf->id)
-            ->assertDontSee('#'.$hasilCbrKedua->id);
+            // CBR kedua tetap tampil, tapi tanpa pasangan CF (CF tidak dipakai dua kali).
+            ->assertSee('#'.$hasilCbrKedua->id)
+            ->assertSee('Tidak ada pasangan');
+
+        $this->assertSame(1, substr_count($response->getContent(), '#'.$hasilCf->id));
     }
 
     private function buatKasusCbr(int $userId, array $gejalaIds): KasusCbr

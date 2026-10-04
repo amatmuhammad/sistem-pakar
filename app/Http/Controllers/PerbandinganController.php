@@ -40,6 +40,8 @@ class PerbandinganController extends Controller
         }
 
         $perbandingan = [];
+        $cbrTerpakai = [];
+        $cfTerpakai = [];
 
         foreach ($dataCbr as $cbr) {
             $key = $this->diagnosisKey($cbr);
@@ -54,6 +56,9 @@ class PerbandinganController extends Controller
             $cfTanggal = $this->formatTanggal($cf->kasus?->tanggal ?: $cf->created_at);
             $sama = (int) $cbr->penyakit_hama_id === (int) $cf->penyakit_hama_id;
 
+            $cbrTerpakai[] = $cbr->id;
+            $cfTerpakai[] = $cf->id;
+
             $perbandingan[] = [
                 'no' => count($perbandingan) + 1,
                 'id_cbr' => $cbr->id,
@@ -64,6 +69,46 @@ class PerbandinganController extends Controller
                 'cf' => $cf->penyakit?->nama_penyakit ?? 'Tidak diketahui',
                 'status' => $sama ? 'Sama' : 'Berbeda',
                 'similarity_pct' => round((float) $cbr->similarity_final * 100, 2),
+                'cf_pct' => round((float) $cf->cf_final * 100, 2),
+            ];
+        }
+
+        // Tampilkan semua diagnosis CBR yang tidak punya pasangan CF.
+        foreach ($dataCbr as $cbr) {
+            if (in_array($cbr->id, $cbrTerpakai, true)) {
+                continue;
+            }
+
+            $perbandingan[] = [
+                'no' => count($perbandingan) + 1,
+                'id_cbr' => $cbr->id,
+                'id_cf' => null,
+                'tanggal_cbr' => $this->formatTanggal($cbr->kasus?->tanggal ?: $cbr->created_at),
+                'tanggal_cf' => null,
+                'cbr' => $cbr->penyakit?->nama_penyakit ?? 'Tidak diketahui',
+                'cf' => '—',
+                'status' => 'Tidak ada pasangan',
+                'similarity_pct' => round((float) $cbr->similarity_final * 100, 2),
+                'cf_pct' => null,
+            ];
+        }
+
+        // Tampilkan semua diagnosis CF yang tidak punya pasangan CBR.
+        foreach ($dataCf as $cf) {
+            if (in_array($cf->id, $cfTerpakai, true)) {
+                continue;
+            }
+
+            $perbandingan[] = [
+                'no' => count($perbandingan) + 1,
+                'id_cbr' => null,
+                'id_cf' => $cf->id,
+                'tanggal_cbr' => null,
+                'tanggal_cf' => $this->formatTanggal($cf->kasus?->tanggal ?: $cf->created_at),
+                'cbr' => '—',
+                'cf' => $cf->penyakit?->nama_penyakit ?? 'Tidak diketahui',
+                'status' => 'Tidak ada pasangan',
+                'similarity_pct' => null,
                 'cf_pct' => round((float) $cf->cf_final * 100, 2),
             ];
         }
