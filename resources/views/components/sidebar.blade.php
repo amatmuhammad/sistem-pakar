@@ -74,16 +74,10 @@
                     <div class="text-truncate" data-i18n="Diagnosa">Diagnosa</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->routeIs('diagnosa-cbr.kasus') ? 'active' : '' }}">
-                <a href="{{ route('diagnosa-cbr.kasus') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-list-ul"></i>
-                    <div class="text-truncate" data-i18n="Kasus">Basis Kasus CBR</div>
-                </a>
-            </li>
-            <li class="menu-item {{ request()->routeIs('diagnosa-cf.hasil') ? 'active' : '' }}">
-                <a href="{{ route('diagnosa-cf.hasil') }}" class="menu-link">
+            <li class="menu-item {{ request()->routeIs('riwayat.diagnosa') ? 'active' : '' }}">
+                <a href="{{ route('riwayat.diagnosa') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-history"></i>
-                    <div class="text-truncate" data-i18n="Hasil Diagnosa">Hasil Diagnosa CF</div>
+                    <div class="text-truncate" data-i18n="Riwayat Diagnosa">Riwayat Diagnosa</div>
                 </a>
             </li>
             

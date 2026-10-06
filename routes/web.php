@@ -5,8 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GejalaController;
 use App\Http\Controllers\AturanCfController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DiagnosaCfController;
-use App\Http\Controllers\DiagnosaCbrController;
+use App\Http\Controllers\DiagnosaController;
 use App\Http\Controllers\PenyakitHamaController;
 use App\Http\Controllers\PerbandinganController;
 
@@ -66,13 +65,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/aturan-cf/{id}', [AturanCfController::class, 'update'])->name('aturan-cf.update');
     Route::delete('/aturan-cf/{aturanCf}', [AturanCfController::class, 'destroy'])->name('aturan-cf.destroy');
 
-    /* RIWAYAT & DETAIL KASUS CBR */
-    Route::get('/diagnosa-cbr/kasus', [DiagnosaCbrController::class, 'kasus'])->name('diagnosa-cbr.kasus');
-
-
-
-    /* HASIL DIAGNOSA CF */
-    Route::get('/diagnosa-cf/hasil', [DiagnosaCfController::class, 'hasil'])->name('diagnosa-cf.hasil');
+    /* RIWAYAT GABUNGAN: BASIS KASUS CBR + HASIL DIAGNOSA CF */
+    Route::get('/riwayat-diagnosa', [DiagnosaController::class, 'riwayat'])->name('riwayat.diagnosa');
 
     Route::get('/perbandingan-akurasi', [PerbandinganController::class, 'index'])->name('perbandingan.akurasi');
 });
