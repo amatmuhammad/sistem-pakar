@@ -36,43 +36,47 @@ class DashboardController extends Controller
             ->groupBy('tanggal')
             ->pluck('total', 'tanggal');
 
-        $cf = HasilDiagnosisCf::query()
-            ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('tanggal')
-            ->pluck('total', 'tanggal');
-
         $labels = [];
-        $cbrData = [];
-        $cfData = [];
 
+        $total = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
             $formattedDate = $date->format('Y-m-d');
             $displayDate = $date->format('d M'); // Contoh: 16 Jul
 
             $labels[] = $displayDate;
-            $cbrData[] = (int) ($cbr[$formattedDate] ?? 0);
-            $cfData[] = (int) ($cf[$formattedDate] ?? 0);
+            // Satu proses diagnosa menghasilkan kasus CBR & CF, jadi gunakan jumlah kasus CBR (sama dengan CF)
+            $total[] = (int) ($cbr[$formattedDate] ?? 0);
         }
 
         return [
             'labels' => $labels,
-            'cbr' => $cbrData,
-            'cf' => $cfData,
+            'total'  => $total,
         ];
     }
 
     private function penyakitTerbanyak(): array
     {
+        // Gabungkan ranking dari tabel CBR dan CF menjadi satu
         $cbr = $this->rankingPenyakit('hasil_diagnosis_cbr');
         $cf = $this->rankingPenyakit('hasil_diagnosis_cf');
-        $labels = $cbr->pluck('nama_penyakit')->merge($cf->pluck('nama_penyakit'))->unique()->take(8)->values();
+
+        $labels = $cbr->pluck('nama_penyakit')->merge($cf->pluck('nama_penyakit'))->unique()->values();
+
+        $totals = $labels->map(fn ($item) =>
+            (int) optional($cbr->firstWhere('nama_penyakit', $item))->total +
+            (int) optional($cf->firstWhere('nama_penyakit', $item))->total
+        );
+
+        // Urutkan berdasarkan total diagnosa terbanyak, ambil 8 teratas
+        $combined = $labels->map(fn ($item, $i) => ['nama' => $item, 'total' => $totals[$i]])
+            ->sortByDesc('total')
+            ->take(8)
+            ->values();
 
         return [
-            'labels' => $labels,
-            'cbr' => $labels->map(fn ($item) => (int) optional($cbr->firstWhere('nama_penyakit', $item))->total)->values(),
-            'cf' => $labels->map(fn ($item) => (int) optional($cf->firstWhere('nama_penyakit', $item))->total)->values(),
+            'labels' => $combined->pluck('nama'),
+            'total'  => $combined->pluck('total'),
         ];
     }
 

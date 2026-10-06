@@ -84,8 +84,8 @@
             <div class="card dashboard-chart-card border-0 shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-start">
                     <div>
-                        <h5 class="mb-1">Hasil Diagnosa per Tanggal</h5>
-                        <small class="text-muted">Perbandingan jumlah diagnosa metode CBR dan CF</small>
+                        <h5 class="mb-1">Total Diagnosa per Tanggal</h5>
+                        <small class="text-muted">Jumlah proses diagnosa (CBR & CF) dalam 7 hari terakhir</small>
                     </div>
                     <span class="badge bg-label-primary">Trend</span>
                 </div>
@@ -100,7 +100,7 @@
                 <div class="card-header d-flex justify-content-between align-items-start">
                     <div>
                         <h5 class="mb-1">Penyakit Sering Didiagnosa</h5>
-                        <small class="text-muted">Ranking diagnosis berdasarkan metode</small>
+                        <small class="text-muted">Ranking diagnosis berdasarkan hasil CBR & CF</small>
                     </div>
                     <span class="badge bg-label-success">Top 8</span>
                 </div>
@@ -268,15 +268,11 @@
             },
             series: [
                 {
-                    name: 'CBR',
-                    data: normalizeSeries(diagnosaPerTanggal.cbr, diagnosaPerTanggal.labels)
-                },
-                {
-                    name: 'CF',
-                    data: normalizeSeries(diagnosaPerTanggal.cf, diagnosaPerTanggal.labels)
+                    name: 'Total Diagnosa',
+                    data: normalizeSeries(diagnosaPerTanggal.total, diagnosaPerTanggal.labels)
                 }
             ],
-            colors: ['#71dd37', '#ffab00'],
+            colors: ['#71dd37'],
             fill: {
                 type: 'gradient',
                 gradient: {
@@ -324,23 +320,20 @@
             },
             series: [
                 {
-                    name: 'CBR',
-                    data: normalizeSeries(penyakitTerbanyak.cbr, penyakitTerbanyak.labels)
-                },
-                {
-                    name: 'CF',
-                    data: normalizeSeries(penyakitTerbanyak.cf, penyakitTerbanyak.labels)
+                    name: 'Total Diagnosa',
+                    data: normalizeSeries(penyakitTerbanyak.total, penyakitTerbanyak.labels)
                 }
             ],
-            colors: ['#71dd37', '#ffab00'],
+            colors: ['#00cfe8'],
             plotOptions: {
                 bar: {
                     horizontal: true,
-                    borderRadius: 5,
-                    barHeight: '62%'
+                    borderRadius: 6,
+                    barHeight: '55%',
+                    distributed: false
                 }
             },
-            dataLabels: { enabled: false },
+            dataLabels: { enabled: true, style: { colors: ['#fff'] }, formatter: (v) => v },
             xaxis: {
                 min: 0,
                 forceNiceScale: true,
