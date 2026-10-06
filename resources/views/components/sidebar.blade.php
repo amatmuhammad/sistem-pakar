@@ -1,7 +1,7 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     
     <div class="app-brand demo">
-        <a href="{{ route('diagnosa-cbr.form') }}" class="app-brand-link">
+        <a href="{{ route('diagnosa.form') }}" class="app-brand-link">
             <span class="app-brand-text demo menu-text fw-bold ms-2">Sistem Pakar</span>
         </a>
 
@@ -68,43 +68,23 @@
             <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">CBR & CF</span>
             </li>
-            <li class="menu-item {{ request()->is('diagnosa-cbr*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-brain"></i> 
-                    <div class="text-truncate" data-i18n="Metodecbr">Metode CBR</div>
+            <li class="menu-item {{ request()->is('diagnosa*') ? 'active open' : '' }}">
+                <a href="{{ route('diagnosa.form') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-brain"></i>
+                    <div class="text-truncate" data-i18n="Diagnosa">Diagnosa</div>
                 </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ request()->routeIs('diagnosa-cbr.form') ? 'active' : '' }}">
-                        <a href="{{ route('diagnosa-cbr.form') }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Diagnosa">Diagnosa</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->routeIs('diagnosa-cbr.kasus') ? 'active' : '' }}">
-                        <a href="{{ route('diagnosa-cbr.kasus') }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Kasus">Basis Kasus</div>
-                        </a>
-                    </li>
-
-                </ul>
             </li>
-
-            <li class="menu-item {{ request()->is('diagnosa-cf*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <li class="menu-item {{ request()->routeIs('diagnosa-cbr.kasus') ? 'active' : '' }}">
+                <a href="{{ route('diagnosa-cbr.kasus') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-list-ul"></i>
-                    <div class="text-truncate" data-i18n="Authentications">Metode CF</div>
+                    <div class="text-truncate" data-i18n="Kasus">Basis Kasus CBR</div>
                 </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ request()->routeIs('diagnosa-cf.form') ? 'active' : '' }}">
-                        <a href="{{ route('diagnosa-cf.form') }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Basic">Diagnosa</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->routeIs('diagnosa-cf.hasil') ? 'active' : '' }}">
-                        <a href="{{ route('diagnosa-cf.hasil') }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Basic">Hasil Diagnosa</div>
-                        </a>
-                    </li>
-                </ul>
+            </li>
+            <li class="menu-item {{ request()->routeIs('diagnosa-cf.hasil') ? 'active' : '' }}">
+                <a href="{{ route('diagnosa-cf.hasil') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-history"></i>
+                    <div class="text-truncate" data-i18n="Hasil Diagnosa">Hasil Diagnosa CF</div>
+                </a>
             </li>
             
             <!-- Perbandingan -->
@@ -136,19 +116,11 @@
                 <span class="menu-header-text">Uji Coba Diagnosa</span>
             </li>
             
-            <!-- Diagnosa CBR -->
-            <li class="menu-item {{ request()->routeIs('diagnosa-cbr.form') ? 'active' : '' }}">
-                <a href="{{ route('diagnosa-cbr.form') }}" class="menu-link">
+            <!-- Diagnosa Gabungan -->
+            <li class="menu-item {{ request()->routeIs('diagnosa.form') ? 'active' : '' }}">
+                <a href="{{ route('diagnosa.form') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-brain text-success"></i>
-                    <div class="text-truncate">Diagnosa CBR</div>
-                </a>
-            </li>
-
-            <!-- Diagnosa CF -->
-            <li class="menu-item {{ request()->routeIs('diagnosa-cf.form') ? 'active' : '' }}">
-                <a href="{{ route('diagnosa-cf.form') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-list-ul text-success"></i>
-                    <div class="text-truncate">Diagnosa CF</div>
+                    <div class="text-truncate">Diagnosa</div>
                 </a>
             </li>
 

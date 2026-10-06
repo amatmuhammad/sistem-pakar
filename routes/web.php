@@ -24,7 +24,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
     if (session('is_guest')) {
-        return redirect()->route('diagnosa-cbr.form');
+        return redirect()->route('diagnosa.form');
     }
     return redirect()->route('login');
 });
@@ -36,15 +36,10 @@ Route::group(['middleware' => function ($request, $next) {
     }
     return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu atau gunakan Akses Tamu.');
 }], function () {
-    /* DIAGNOSA CBR (Form, Proses & Hapus Sesi) */
-    Route::get('/diagnosa-cbr', [DiagnosaCbrController::class, 'form'])->name('diagnosa-cbr.form');
-    Route::post('/diagnosa-cbr/proses', [DiagnosaCbrController::class, 'proses'])->name('diagnosa-cbr.proses');
-    Route::post('/diagnosa-cbr/clear-session', [DiagnosaCbrController::class, 'clearSession'])->name('diagnosa-cbr.clear-session');
-
-    /* METODE CERTAINTY FACTOR (Form, Proses & Hapus Sesi) */
-    Route::get('/diagnosa-cf', [DiagnosaCfController::class, 'form'])->name('diagnosa-cf.form');
-    Route::post('/diagnosa-cf/proses', [DiagnosaCfController::class, 'proses'])->name('diagnosa-cf.proses');
-    Route::post('/diagnosa-cf/clear-session', [DiagnosaCfController::class, 'clearSession'])->name('diagnosa-cf.clear-session');
+    /* DIAGNOSA GABUNGAN (CBR + CF) */
+    Route::get('/diagnosa', [\App\Http\Controllers\DiagnosaController::class, 'form'])->name('diagnosa.form');
+    Route::post('/diagnosa/proses', [\App\Http\Controllers\DiagnosaController::class, 'proses'])->name('diagnosa.proses');
+    Route::post('/diagnosa/clear-session', [\App\Http\Controllers\DiagnosaController::class, 'clear-session'])->name('diagnosa.clear-session');
 });
 
 /* ===================== AREA ADMIN (KHUSUS AUTH / USER TERDAFTAR) ===================== */

@@ -17,7 +17,7 @@ class AuthController extends Controller
         }
 
         if (session('is_guest')) {
-            return redirect()->route('diagnosa-cbr.form');
+            return redirect()->route('diagnosa.form');
         }
 
         return view('auth.login');
@@ -63,7 +63,7 @@ class AuthController extends Controller
             'guest_name' => 'Pengguna Tamu'
         ]);
 
-        return redirect()->route('diagnosa-cbr.form')
+        return redirect()->route('diagnosa.form')
             ->with('success', 'Anda masuk sebagai Tamu. Anda dapat melakukan pengujian diagnosa dengan akses terbatas.');
     }
 
