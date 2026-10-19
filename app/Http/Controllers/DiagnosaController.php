@@ -9,7 +9,7 @@ use App\Models\HasilDiagnosisCbr;
 use App\Models\HasilDiagnosisCf;
 use App\Models\KasusCbr;
 use App\Models\KasusCf;
-use App\Models\PenyakitHama;
+use App\Services\DiagnosaEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -73,7 +73,7 @@ class DiagnosaController extends Controller
                         'kasus_cf_id'   => $kasusCf->id,
                         'gejala_id'     => $gejalaId,
                         // Nilai keyakinan user di-default-kan 1.0 (Sangat Yakin)
-                        'nilai_cf_user' => 1.0,
+                        'nilai_cf_user' => DiagnosaEngine::NILAI_CF_USER,
                     ]);
                 }
 
@@ -171,83 +171,35 @@ class DiagnosaController extends Controller
         return view('riwayat.index', compact('riwayat', 'metode'));
     }
 
-    /* ================= HITUNG CBR (diambil dari DiagnosaCbrController) ================= */
-    private function hitungCbr($kasus)
+    /* ================= HITUNG CBR ================= */
+    private function hitungCbr($kasus): ?HasilDiagnosisCbr
     {
         $gejalaBaru = FiturKasusCbr::where('kasus_cbr_id', $kasus->id)->pluck('gejala_id')->toArray();
-        if (empty($gejalaBaru)) return null;
 
-        $penyakitList = PenyakitHama::with('basisGejala')->get();
-        $similarityTertinggi = 0;
-        $penyakitTerbaik = null;
+        $hasil = app(DiagnosaEngine::class)->cbr($gejalaBaru);
 
-        foreach ($penyakitList as $penyakit) {
-            $gejalaPenyakit = $penyakit->basisGejala->pluck('id')->toArray();
-            if (empty($gejalaPenyakit)) continue;
-
-            $bobotCocok = Gejala::whereIn('id', $gejalaBaru)
-                                ->whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
-            $totalBobot = Gejala::whereIn('id', $gejalaPenyakit)->sum('bobot_cbr');
-            $similarity = $totalBobot > 0 ? $bobotCocok / $totalBobot : 0;
-
-            if ($similarity > $similarityTertinggi) {
-                $similarityTertinggi = $similarity;
-                $penyakitTerbaik = $penyakit;
-            }
-        }
-
-        if (!$penyakitTerbaik || $similarityTertinggi == 0) return null;
-
-        return HasilDiagnosisCbr::create([
-            'kasus_cbr_id'     => $kasus->id,
-            'penyakit_hama_id' => $penyakitTerbaik->id,
-            'similarity_final' => $similarityTertinggi,
-        ]);
-    }
-
-    /* ================= HITUNG CF (diambil dari DiagnosaCfController) ================= */
-    private function hitungCf($kasusId)
-    {
-        $gejalaUser = GejalaKasusCf::where('kasus_cf_id', $kasusId)->get();
-        if ($gejalaUser->isEmpty()) return null;
-
-        $penyakitList = PenyakitHama::with('basisGejalaPivot')->get();
-        $cfPenyakit = [];
-
-        foreach ($penyakitList as $penyakit) {
-            $cfCombine = 0;
-
-            foreach ($gejalaUser as $g) {
-                $basis = $penyakit->basisGejalaPivot->firstWhere('id', $g->gejala_id);
-                if ($basis && isset($basis->pivot->cf_pakar)) {
-                    $cfGejala = $basis->pivot->cf_pakar * $g->nilai_cf_user;
-                    $cfCombine = ($cfCombine == 0)
-                        ? $cfGejala
-                        : $cfCombine + $cfGejala * (1 - $cfCombine);
-                }
-            }
-
-            if ($cfCombine > 0) {
-                $cfPenyakit[$penyakit->id] = $cfCombine;
-            }
-        }
-
-        if (empty($cfPenyakit)) return null;
-
-        arsort($cfPenyakit);
-
-        $penyakitId = array_key_first($cfPenyakit);
-        $cfFinal = $cfPenyakit[$penyakitId];
-
-        $threshold = 0.5;
-        if ($cfFinal < $threshold) {
+        if (! $hasil) {
             return null;
         }
 
-        return HasilDiagnosisCf::create([
-            'kasus_cf_id'      => $kasusId,
-            'penyakit_hama_id' => $penyakitId,
-            'cf_final'         => $cfFinal,
-        ]);
+        return HasilDiagnosisCbr::create(array_merge($hasil, [
+            'kasus_cbr_id' => $kasus->id,
+        ]));
+    }
+
+    /* ================= HITUNG CF ================= */
+    private function hitungCf($kasusId): ?HasilDiagnosisCf
+    {
+        $gejalaUser = GejalaKasusCf::where('kasus_cf_id', $kasusId)->get();
+
+        $hasil = app(DiagnosaEngine::class)->cf($gejalaUser->pluck('gejala_id')->all());
+
+        if (! $hasil) {
+            return null;
+        }
+
+        return HasilDiagnosisCf::create(array_merge($hasil, [
+            'kasus_cf_id' => $kasusId,
+        ]));
     }
 }

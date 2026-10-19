@@ -22,8 +22,10 @@ class DatabaseSeeder extends Seeder
             PenyakitHamaSeeder::class,
             AturanCfSeeder::class,
             UserSeeder::class,
-            KasusCbrSeeder::class,
+            // Basis-knowledge harus siap lebih dulu karena seeder riwayat diagnosa
+            // memakai DiagnosaEngine yang bergantung pada tabel basis_penyakit_gejala.
             BasisPenyakitGejalaSeeder::class,
+            KasusCbrSeeder::class,
             // BasisPenyakitGejalaCfSeeder::class,
         ]);
     }

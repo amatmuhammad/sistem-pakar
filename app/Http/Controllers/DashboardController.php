@@ -5,80 +5,99 @@ namespace App\Http\Controllers;
 use App\Models\Gejala;
 use App\Models\KasusCbr;
 use App\Models\PenyakitHama;
-use Illuminate\Support\Facades\DB;
-use App\Models\HasilDiagnosisCf;
-use App\Models\HasilDiagnosisCbr;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
 {
+    /**
+     * Jumlah hari yang ditampilkan pada grafik "Total Diagnosa per Tanggal".
+     */
+    private const PERIODE_HARI = 7;
+
+    /**
+     * Jumlah penyakit/hama yang ditampilkan pada grafik ranking.
+     */
+    private const LIMIT_RANKING = 8;
+
     public function index()
     {
+        // Satu proses diagnosa menghasilkan tepat satu kasus CBR (dan satu kasus CF),
+        // sehingga jumlah kasus = jumlah diagnosa. Cukup hitung sekali lalu dipakai dua kali.
+        $totalKasus = KasusCbr::count();
+
         return view('dashboard.index', [
-            'totalGejala' => Gejala::count(),
-            'totalPenyakit' => PenyakitHama::count(),
-            'totalKasus' => KasusCbr::count(),
-            'totalDiagnosa' => KasusCbr::count(), // satu proses diagnosa = satu kasus CBR (hindari double count dengan CF)
+            'totalGejala'        => Gejala::count(),
+            'totalPenyakit'      => PenyakitHama::count(),
+            'totalKasus'         => $totalKasus,
+            'totalDiagnosa'      => $totalKasus,
             'diagnosaPerTanggal' => $this->diagnosaPerTanggal(),
-            'penyakitTerbanyak' => $this->penyakitTerbanyak(),
+            'penyakitTerbanyak'  => $this->penyakitTerbanyak(),
         ]);
     }
 
+    /**
+     * Jumlah proses diagnosa pada beberapa hari terakhir.
+     *
+     * Tanggal yang dipakai adalah `kasus_cbr.tanggal` (tanggal diagnosa), bukan
+     * `created_at` (waktu baris dibuat), agar konsisten dengan halaman Riwayat
+     * dan Perbandingan dan tetap akurat untuk data lama/imported.
+     *
+     * @return array{labels: array<int, string>, total: array<int, int>}
+     */
     private function diagnosaPerTanggal(): array
     {
-        // 1. Buat rentang 7 hari terakhir secara dinamis
-        $startDate = Carbon::now()->subDays(6)->startOfDay();
-        $endDate = Carbon::now()->endOfDay();
+        $periode = $this->periodeTerakhir();
 
-        $cbr = HasilDiagnosisCbr::query()
-            ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('tanggal')
-            ->pluck('total', 'tanggal');
-
-        $labels = [];
-
-        $total = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i);
-            $formattedDate = $date->format('Y-m-d');
-            $displayDate = $date->format('d M'); // Contoh: 16 Jul
-
-            $labels[] = $displayDate;
-            // Satu proses diagnosa menghasilkan kasus CBR & CF, jadi gunakan jumlah kasus CBR (sama dengan CF)
-            $total[] = (int) ($cbr[$formattedDate] ?? 0);
-        }
+        $jumlahPerTanggal = KasusCbr::query()
+            // Alias memakai nama berbeda dari kolom "tanggal" agar GROUP BY
+            // tidak ikut mengelompokkan berdasarkan nilai datetime-mentah.
+            ->selectRaw('DATE(tanggal) as tanggal_diagnosa, COUNT(*) as total')
+            ->whereBetween('tanggal', [
+                $periode->first()->copy()->startOfDay(),
+                $periode->last()->copy()->endOfDay(),
+            ])
+            ->groupBy('tanggal_diagnosa')
+            ->pluck('total', 'tanggal_diagnosa');
 
         return [
-            'labels' => $labels,
-            'total'  => $total,
+            'labels' => $periode->map(fn (Carbon $tanggal) => $tanggal->format('d M'))->all(),
+            'total'  => $periode
+                ->map(fn (Carbon $tanggal) => (int) ($jumlahPerTanggal[$tanggal->format('Y-m-d')] ?? 0))
+                ->all(),
         ];
     }
 
+    /**
+     * Ranking penyakit/hama yang paling sering terdeteksi pada hasil diagnosa CBR.
+     *
+     * @return array{labels: array<int, string>, total: array<int, int>}
+     */
     private function penyakitTerbanyak(): array
     {
-        // Hanya hitung dari tabel CBR untuk menghindari double count.
-        // Satu proses diagnosa membuat record di kedua tabel CBR dan CF,
-        // jadi jika digabung akan masing-masing penyakit terhitung 2 kali.
-        $cbr = $this->rankingPenyakit('hasil_diagnosis_cbr');
+        $ranking = PenyakitHama::query()
+            ->withCount('hasilCbr')
+            ->whereHas('hasilCbr')
+            ->orderByDesc('hasil_cbr_count')
+            ->limit(self::LIMIT_RANKING)
+            ->get(['nama_penyakit']);
 
         return [
-            'labels' => $cbr->pluck('nama_penyakit'),
-            'total'  => $cbr->pluck('total'),
+            'labels' => $ranking->pluck('nama_penyakit')->all(),
+            'total'  => $ranking->map(fn (PenyakitHama $penyakit) => (int) $penyakit->hasil_cbr_count)->all(),
         ];
     }
 
-    private function rankingPenyakit(string $table)
+    /**
+     * Deret tanggal periode "PERIODE_HARI hari terakhir", dari yang terlama ke yang terbaru.
+     *
+     * @return Collection<int, Carbon>
+     */
+    private function periodeTerakhir(): Collection
     {
-        // Tentukan foreign key yang sesuai berdasarkan tabel yang dilewatkan
-        $foreignKey = 'penyakit_hama_id';
+        $hariIni = Carbon::now()->startOfDay();
 
-        return DB::table($table)
-            ->join('penyakit_hama', "{$table}.{$foreignKey}", '=', 'penyakit_hama.id')
-            ->select('penyakit_hama.nama_penyakit', DB::raw('COUNT(*) as total'))
-            ->groupBy('penyakit_hama.id', 'penyakit_hama.nama_penyakit')
-            ->orderByDesc('total')
-            ->limit(8)
-            ->get();
+        return collect(range(self::PERIODE_HARI - 1, 0))
+            ->map(fn (int $offset) => $hariIni->copy()->subDays($offset));
     }
 }
