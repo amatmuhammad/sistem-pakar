@@ -38,7 +38,7 @@ Route::group(['middleware' => function ($request, $next) {
     /* DIAGNOSA GABUNGAN (CBR + CF) */
     Route::get('/diagnosa', [\App\Http\Controllers\DiagnosaController::class, 'form'])->name('diagnosa.form');
     Route::post('/diagnosa/proses', [\App\Http\Controllers\DiagnosaController::class, 'proses'])->name('diagnosa.proses');
-    Route::post('/diagnosa/clear-session', [\App\Http\Controllers\DiagnosaController::class, 'clear-session'])->name('diagnosa.clear-session');
+    Route::post('/diagnosa/clear-session', [\App\Http\Controllers\DiagnosaController::class, 'clearSession'])->name('diagnosa.clear-session');
 });
 
 /* ===================== AREA ADMIN (KHUSUS AUTH / USER TERDAFTAR) ===================== */

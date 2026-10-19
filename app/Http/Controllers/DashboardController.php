@@ -18,7 +18,7 @@ class DashboardController extends Controller
             'totalGejala' => Gejala::count(),
             'totalPenyakit' => PenyakitHama::count(),
             'totalKasus' => KasusCbr::count(),
-            'totalDiagnosa' => HasilDiagnosisCbr::count() + HasilDiagnosisCf::count(),
+            'totalDiagnosa' => KasusCbr::count(), // satu proses diagnosa = satu kasus CBR (hindari double count dengan CF)
             'diagnosaPerTanggal' => $this->diagnosaPerTanggal(),
             'penyakitTerbanyak' => $this->penyakitTerbanyak(),
         ]);
@@ -57,26 +57,14 @@ class DashboardController extends Controller
 
     private function penyakitTerbanyak(): array
     {
-        // Gabungkan ranking dari tabel CBR dan CF menjadi satu
+        // Hanya hitung dari tabel CBR untuk menghindari double count.
+        // Satu proses diagnosa membuat record di kedua tabel CBR dan CF,
+        // jadi jika digabung akan masing-masing penyakit terhitung 2 kali.
         $cbr = $this->rankingPenyakit('hasil_diagnosis_cbr');
-        $cf = $this->rankingPenyakit('hasil_diagnosis_cf');
-
-        $labels = $cbr->pluck('nama_penyakit')->merge($cf->pluck('nama_penyakit'))->unique()->values();
-
-        $totals = $labels->map(fn ($item) =>
-            (int) optional($cbr->firstWhere('nama_penyakit', $item))->total +
-            (int) optional($cf->firstWhere('nama_penyakit', $item))->total
-        );
-
-        // Urutkan berdasarkan total diagnosa terbanyak, ambil 8 teratas
-        $combined = $labels->map(fn ($item, $i) => ['nama' => $item, 'total' => $totals[$i]])
-            ->sortByDesc('total')
-            ->take(8)
-            ->values();
 
         return [
-            'labels' => $combined->pluck('nama'),
-            'total'  => $combined->pluck('total'),
+            'labels' => $cbr->pluck('nama_penyakit'),
+            'total'  => $cbr->pluck('total'),
         ];
     }
 

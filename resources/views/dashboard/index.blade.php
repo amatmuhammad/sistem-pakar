@@ -85,7 +85,7 @@
                 <div class="card-header d-flex justify-content-between align-items-start">
                     <div>
                         <h5 class="mb-1">Total Diagnosa per Tanggal</h5>
-                        <small class="text-muted">Jumlah proses diagnosa (CBR & CF) dalam 7 hari terakhir</small>
+                        <small class="text-muted">Jumlah proses diagnosa dalam 7 hari terakhir</small>
                     </div>
                     <span class="badge bg-label-primary">Trend</span>
                 </div>
@@ -100,7 +100,7 @@
                 <div class="card-header d-flex justify-content-between align-items-start">
                     <div>
                         <h5 class="mb-1">Penyakit Sering Didiagnosa</h5>
-                        <small class="text-muted">Ranking diagnosis berdasarkan hasil CBR & CF</small>
+                        <small class="text-muted">Ranking diagnosis berdasarkan hasil diagnosa</small>
                     </div>
                     <span class="badge bg-label-success">Top 8</span>
                 </div>
