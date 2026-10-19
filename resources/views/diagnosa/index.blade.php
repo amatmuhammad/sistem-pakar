@@ -27,7 +27,18 @@
 
         <div class="card-body">
             @if(session('hasil_cbr') || session('hasil_cf'))
-                @php $cbr = session('hasil_cbr'); $cf = session('hasil_cf'); @endphp
+                @php
+                    $cbr = session('hasil_cbr');
+                    $cf = session('hasil_cf');
+
+                    // Label hasil: "Hama Terdeteksi" atau "Penyakit Terdeteksi"
+                    $labelCbr = ($cbr && strtolower((string) $cbr->penyakit->jenis) === 'hama')
+                        ? 'Hama Terdeteksi'
+                        : 'Penyakit Terdeteksi';
+                    $labelCf = ($cf && strtolower((string) $cf->penyakit->jenis) === 'hama')
+                        ? 'Hama Terdeteksi'
+                        : 'Penyakit Terdeteksi';
+                @endphp
 
                 <div class="row g-4">
                     {{-- ================= HASIL METODE CBR ================= --}}
@@ -40,7 +51,7 @@
                             <div class="card-body pt-4">
                                 @if($cbr)
                                     <div class="mb-3">
-                                        <label class="text-muted small text-uppercase fw-semibold">Penyakit Terdeteksi</label>
+                                        <label class="text-muted small text-uppercase fw-semibold">{{ $labelCbr }}</label>
                                         <h3 class="text-primary mt-1">{{ $cbr->penyakit->nama_penyakit }}</h3>
                                     </div>
 
@@ -91,7 +102,7 @@
                             <div class="card-body pt-4">
                                 @if($cf)
                                     <div class="mb-3">
-                                        <label class="text-muted small text-uppercase fw-semibold">Penyakit Terdeteksi</label>
+                                        <label class="text-muted small text-uppercase fw-semibold">{{ $labelCf }}</label>
                                         <h3 class="text-primary mt-1">{{ $cf->penyakit->nama_penyakit }}</h3>
                                     </div>
 
